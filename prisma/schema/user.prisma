@@ -18,6 +18,7 @@ model User {
   updatedAt          DateTime        @updatedAt
   //relations
   citizen            CitizenProfile?
+  resolver           ResolverProfile?
 
   @@unique([email])
   @@index([email], name: "idx_email")
