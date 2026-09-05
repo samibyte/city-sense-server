@@ -27,6 +27,8 @@ authRouter.get(
 	authController.getMe,
 );
 
+authRouter.post("/refresh-token", authController.refreshToken);
+
 authRouter.post(
 	"/send-verification-otp",
 	validateRequest(UserValidation.SendEmailVerificationOtpZodSchema),

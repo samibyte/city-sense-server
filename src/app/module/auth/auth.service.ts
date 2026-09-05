@@ -3,6 +3,7 @@ import ejs from "ejs";
 import httpStatus from "http-status";
 import crypto from "node:crypto";
 import path from "node:path";
+import type { JwtPayload } from "jsonwebtoken";
 import {
 	AuthProvider,
 	Role,
@@ -14,6 +15,7 @@ import { transporter } from "../../lib/lib";
 import { prisma } from "../../lib/prisma";
 import { redisClient } from "../../lib/redis-client";
 import { generateAuthTokens } from "../../utils/auth-token";
+import { jwtUtils } from "../../utils/jwt";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import type {
 	ILoginPayload,
@@ -179,6 +181,53 @@ const sendEmailVerificationOtp = async (
 	return result;
 };
 
+const refreshToken = async (refreshToken: string) => {
+	if (!refreshToken) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Refresh token is required",
+		);
+	}
+
+	const verifiedToken = jwtUtils.verifyToken(
+		refreshToken,
+		envVars.REFRESH_TOKEN_SECRET,
+	);
+
+	if (!verifiedToken.success) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Invalid or expired refresh token",
+		);
+	}
+
+	const { userId } = verifiedToken.data as JwtPayload;
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+	});
+
+	if (!user || user.isDeleted || user.status === UserStatus.DELETED) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"User not found. Please log in again.",
+		);
+	}
+
+	const jwtPayload = {
+		userId: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
+	};
+
+	const authTokens = generateAuthTokens(jwtPayload);
+
+	return authTokens;
+};
+
 const getMe = async (userId: string) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -252,5 +301,6 @@ export const authService = {
 	registerCitizen,
 	sendEmailVerificationOtp,
 	getMe,
+	refreshToken,
 	verifyEmail,
 };

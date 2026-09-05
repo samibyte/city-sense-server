@@ -77,6 +77,30 @@ const sendEmailVerificationOtp = catchAsync(
 	},
 );
 
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+	const token = req.cookies.refreshToken || req.body.refreshToken;
+	const result = await authService.refreshToken(token);
+
+	res.cookie("accessToken", result.accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+	res.cookie("refreshToken", result.refreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Tokens refreshed successfully",
+		data: result,
+	});
+});
+
 const getMe = catchAsync(async (req: Request, res: Response) => {
 	const result = await authService.getMe(req.user?.userId as string);
 
@@ -103,5 +127,6 @@ export const authController = {
 	registerCitizen,
 	sendEmailVerificationOtp,
 	getMe,
+	refreshToken,
 	verifyEmail,
 };
