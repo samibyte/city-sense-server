@@ -64,7 +64,33 @@ const registerCitizen = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const sendEmailVerificationOtp = catchAsync(
+	async (req: Request, res: Response) => {
+		const payload = req.body;
+		const result = await authService.sendEmailVerificationOtp(payload);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			message: "OTP sent successfully. Please check your email.",
+			data: result,
+		});
+	},
+);
+
+const verifyEmail = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const result = await authService.verifyEmail(payload);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Email verified successfully",
+		data: result,
+	});
+});
+
 export const authController = {
 	loginUser,
 	registerCitizen,
+	sendEmailVerificationOtp,
+	verifyEmail,
 };

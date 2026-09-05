@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Email Verified</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #333;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+      .badge {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #28a745;
+        color: #fff;
+        font-size: 32px;
+        line-height: 64px;
+      }
+      h2 {
+        color: #28a745;
+        margin-top: 0;
+      }
+      p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #555;
+      }
+      .email {
+        font-weight: bold;
+        color: #007bff;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px;
+        background: #28a745;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="badge">&#10003;</div>
+      <h2>Email Verified Successfully!</h2>
+      <p>
+        Hello <%= name %>, congratulations! Your email
+        <span class="email"><%= email %></span> has been successfully verified.
+      </p>
+      <p>You can now enjoy the full features of your City Sense account.</p>
+      <a class="button" href="<%= appUrl %>">Go to Your Dashboard</a>
+      <div class="footer">
+        &copy; <%= year %> City Sense. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

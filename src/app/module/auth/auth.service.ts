@@ -1,5 +1,8 @@
 import bcrypt from "bcrypt";
+import ejs from "ejs";
 import httpStatus from "http-status";
+import crypto from "node:crypto";
+import path from "node:path";
 import {
 	AuthProvider,
 	Role,
@@ -7,10 +10,60 @@ import {
 } from "../../../generated/prisma/enums";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
+import { transporter } from "../../lib/lib";
 import { prisma } from "../../lib/prisma";
+import { redisClient } from "../../lib/redis-client";
 import { generateAuthTokens } from "../../utils/auth-token";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
-import type { ILoginPayload, IRegisterCitizenPayload } from "./auth.interface";
+import type {
+	ILoginPayload,
+	IRegisterCitizenPayload,
+	ISendEmailVerificationOtpPayload,
+	IVerifyEmailPayload,
+} from "./auth.interface";
+
+const EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS = 60 * 10;
+
+const sendEmailVerificationOtpMail = async (user: {
+	name: string;
+	email: string;
+}) => {
+	const otpValue = crypto.randomInt(100000, 1000000).toString();
+	const otpKey = `citizen-email-verification-otp:${user.email}`;
+
+	await redisClient.set(otpKey, otpValue, {
+		expiration: {
+			type: "EX",
+			value: EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS,
+		},
+	});
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/registration-user-otp.ejs",
+	);
+
+	const templateData = {
+		name: user.name,
+		email: user.email,
+		otp: otpValue,
+		expirationMinutes: EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS / 60,
+	};
+
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: envVars.EMAIL_SENDER.SMTP_FROM,
+		to: user.email,
+		subject: "Email Verification OTP",
+		html,
+	});
+
+	return {
+		email: user.email,
+		expirationMinutes: EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS / 60,
+	};
+};
 
 const loginUser = async (payload: ILoginPayload) => {
 	const { email, password } = payload;
@@ -89,6 +142,8 @@ const registerCitizen = async (
 
 	const { citizen, ...user } = createdUser;
 
+	await sendEmailVerificationOtpMail(user);
+
 	const jwtPayload = {
 		userId: user.id,
 		name: user.name,
@@ -105,7 +160,77 @@ const registerCitizen = async (
 	};
 };
 
+const sendEmailVerificationOtp = async (
+	payload: ISendEmailVerificationOtpPayload,
+) => {
+	const email = payload.email.trim().toLowerCase();
+
+	const user = await prisma.user.getActiveUserOrThrow(email);
+
+	if (user.emailVerified) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Email is already verified",
+		);
+	}
+
+	const result = await sendEmailVerificationOtpMail(user);
+
+	return result;
+};
+
+const verifyEmail = async (payload: IVerifyEmailPayload) => {
+	const { email, otp } = payload;
+	const normalizedEmail = email.trim().toLowerCase();
+
+	const user = await prisma.user.getActiveUserOrThrow(normalizedEmail);
+
+	if (user.emailVerified) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Email is already verified");
+	}
+
+	const otpKey = `citizen-email-verification-otp:${normalizedEmail}`;
+	const storedOtp = await redisClient.get(otpKey);
+
+	if (!storedOtp || storedOtp !== otp) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
+	}
+
+	const verifiedUser = await prisma.user.update({
+		where: { id: user.id },
+		data: { emailVerified: true },
+		omit: { passwordHash: true },
+	});
+
+	await redisClient.del(otpKey);
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/email-verified.ejs",
+	);
+
+	const templateData = {
+		name: user.name,
+		email: user.email,
+		appUrl: envVars.FRONTEND_URL,
+		year: new Date().getFullYear(),
+	};
+
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: envVars.EMAIL_SENDER.SMTP_FROM,
+		to: user.email,
+		subject: "Your Email Has Been Verified",
+		html,
+	});
+
+	return verifiedUser;
+};
+
 export const authService = {
 	loginUser,
 	registerCitizen,
+	sendEmailVerificationOtp,
+	verifyEmail,
 };

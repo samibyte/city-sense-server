@@ -18,3 +18,15 @@ authRouter.post(
 	validateRequest(UserValidation.LoginZodSchema),
 	authController.loginUser,
 );
+
+authRouter.post(
+	"/send-verification-otp",
+	validateRequest(UserValidation.SendEmailVerificationOtpZodSchema),
+	authController.sendEmailVerificationOtp,
+);
+
+authRouter.post(
+	"/verify-email",
+	validateRequest(UserValidation.VerifyEmailZodSchema),
+	authController.verifyEmail,
+);

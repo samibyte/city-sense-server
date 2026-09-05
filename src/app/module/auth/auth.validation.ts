@@ -33,7 +33,18 @@ const CitizenRegisterZodSchema = z.object({
 	address: z.string().optional(),
 });
 
+const VerifyEmailZodSchema = z.object({
+	email: z.email("Please provide a valid email!"),
+	otp: z.string().length(6, "OTP must be 6 digits"),
+});
+
+const SendEmailVerificationOtpZodSchema = z.object({
+	email: z.email("Please provide a valid email!"),
+});
+
 export const UserValidation = {
 	LoginZodSchema,
 	CitizenRegisterZodSchema,
+	VerifyEmailZodSchema,
+	SendEmailVerificationOtpZodSchema,
 };
