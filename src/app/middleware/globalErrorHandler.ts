@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { Prisma } from "../../generated/prisma/client";
-import config from "../config";
+import { envVars } from "../config/env";
 
 export const globalErrorHandler = async (
   err: unknown,
@@ -9,7 +9,7 @@ export const globalErrorHandler = async (
   res: Response,
   _next: NextFunction,
 ) => {
-  if (config.node_env === "development") {
+  if (envVars.NODE_ENV === "development") {
     console.log("Error from Global Error Handler", err);
   }
 
@@ -54,14 +54,14 @@ export const globalErrorHandler = async (
     success: false,
     statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
     name:
-      config.node_env === "development" ? errorName : "Internal Server Error",
+      envVars.NODE_ENV === "development" ? errorName : "Internal Server Error",
     message:
-      config.node_env === "development"
+      envVars.NODE_ENV === "development"
         ? errorMessage
         : "Internal Server Error",
-    error: config.node_env === "development" ? err : undefined,
+    error: envVars.NODE_ENV === "development" ? err : undefined,
     stack:
-      config.node_env === "development" && err instanceof Error
+      envVars.NODE_ENV === "development" && err instanceof Error
         ? err.stack
         : undefined,
   });

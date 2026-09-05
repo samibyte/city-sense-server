@@ -1,9 +1,9 @@
 import app from "./app";
-import config from "./app/config";
+import { envVars } from "./app/config/env";
 import { transporter } from "./app/lib/lib";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis-client";
-const PORT = config.port;
+const PORT = envVars.PORT;
 
 const main = async () => {
   try {

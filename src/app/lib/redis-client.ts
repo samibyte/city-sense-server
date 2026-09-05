@@ -1,11 +1,11 @@
 import { createClient } from "redis";
-import config from "../config";
+import { envVars } from "../config/env";
 
 export const redisClient = createClient({
-  username: config.redis_user,
-  password: config.redis_password,
+  username: envVars.REDIS.USER,
+  password: envVars.REDIS.PASS,
   socket: {
-    host: config.redis_host,
-    port: Number(config.redis_port),
+    host: envVars.REDIS.HOST,
+    port: Number(envVars.REDIS.PORT),
   },
 });
