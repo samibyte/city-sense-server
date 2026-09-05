@@ -77,6 +77,16 @@ const sendEmailVerificationOtp = catchAsync(
 	},
 );
 
+const getMe = catchAsync(async (req: Request, res: Response) => {
+	const result = await authService.getMe(req.user?.userId as string);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "User profile retrieved successfully",
+		data: result,
+	});
+});
+
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 	const result = await authService.verifyEmail(payload);
@@ -92,5 +102,6 @@ export const authController = {
 	loginUser,
 	registerCitizen,
 	sendEmailVerificationOtp,
+	getMe,
 	verifyEmail,
 };

@@ -179,6 +179,25 @@ const sendEmailVerificationOtp = async (
 	return result;
 };
 
+const getMe = async (userId: string) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		omit: { passwordHash: true },
+		include: {
+			citizen: true,
+			resolver: true,
+		},
+	});
+
+	if (!user) {
+		throw new AppError(httpStatus.NOT_FOUND, "User not found");
+	}
+
+	return user;
+};
+
 const verifyEmail = async (payload: IVerifyEmailPayload) => {
 	const { email, otp } = payload;
 	const normalizedEmail = email.trim().toLowerCase();
@@ -232,5 +251,6 @@ export const authService = {
 	loginUser,
 	registerCitizen,
 	sendEmailVerificationOtp,
+	getMe,
 	verifyEmail,
 };
