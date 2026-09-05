@@ -1,0 +1,24 @@
+model User {
+  id                 String       @id @default(uuid())
+  name               String
+  email              String
+  password           String?
+  phone              String?
+  profileUrl         String?
+  profilePublicId    String?
+  googleId           String?
+  departmentId       String?
+  authProvider       AuthProvider
+  emailVerified      Boolean      @default(false)
+  role               Role         @default(CITIZEN)
+  status             UserStatus   @default(ACTIVE)
+  needPasswordChange Boolean      @default(false)
+  isDeleted          Boolean      @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([email])
+  @@index([email], name: "idx_email")
+  @@map("users")
+}
