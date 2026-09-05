@@ -7,6 +7,8 @@ import express, {
 } from "express";
 import httpStatus from "http-status";
 import config from "./app/config";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
+import { notFound } from "./app/middleware/notFound";
 
 const app: Application = express();
 
@@ -31,5 +33,8 @@ app.get("/", async (req: Request, res: Response) => {
     message: "City Sense - System running",
   });
 });
+
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
