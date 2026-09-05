@@ -19,3 +19,14 @@ export interface IRegisterCitizenPayload {
 	phone?: string;
 	address?: string;
 }
+
+export interface IForgotPasswordPayload {
+	email: string;
+}
+
+export interface IResetPasswordPayload {
+	email: string;
+	otp: string;
+	newPassword: string;
+	confirmPassword: string;
+}

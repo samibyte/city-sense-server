@@ -36,6 +36,18 @@ authRouter.post(
 );
 
 authRouter.post(
+	"/forgot-password",
+	validateRequest(UserValidation.ForgotPasswordZodSchema),
+	authController.forgotPassword,
+);
+
+authRouter.post(
+	"/reset-password",
+	validateRequest(UserValidation.ResetPasswordZodSchema),
+	authController.resetPassword,
+);
+
+authRouter.post(
 	"/verify-email",
 	validateRequest(UserValidation.VerifyEmailZodSchema),
 	authController.verifyEmail,

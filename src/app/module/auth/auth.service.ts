@@ -18,13 +18,16 @@ import { generateAuthTokens } from "../../utils/auth-token";
 import { jwtUtils } from "../../utils/jwt";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import type {
+	IForgotPasswordPayload,
 	ILoginPayload,
 	IRegisterCitizenPayload,
+	IResetPasswordPayload,
 	ISendEmailVerificationOtpPayload,
 	IVerifyEmailPayload,
 } from "./auth.interface";
 
 const EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS = 60 * 10;
+const PASSWORD_RESET_OTP_EXPIRATION_SECONDS = 60 * 15;
 
 const sendEmailVerificationOtpMail = async (user: {
 	name: string;
@@ -181,6 +184,132 @@ const sendEmailVerificationOtp = async (
 	return result;
 };
 
+const forgotPassword = async (payload: IForgotPasswordPayload) => {
+	const email = payload.email.trim().toLowerCase();
+
+	const user = await prisma.user.findUnique({
+		where: { email },
+	});
+
+	const canResetPassword =
+		user &&
+		user.isDeleted === false &&
+		user.status !== UserStatus.DELETED &&
+		user.status !== UserStatus.BANNED &&
+		user.passwordHash !== null;
+
+	if (!canResetPassword) {
+		return {
+			email,
+			expirationMinutes: PASSWORD_RESET_OTP_EXPIRATION_SECONDS / 60,
+		};
+	}
+
+	const otpValue = crypto.randomInt(100000, 1000000).toString();
+	const otpKey = `password-reset-otp:${email}`;
+
+	await redisClient.set(otpKey, otpValue, {
+		expiration: {
+			type: "EX",
+			value: PASSWORD_RESET_OTP_EXPIRATION_SECONDS,
+		},
+	});
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/password-reset-otp.ejs",
+	);
+
+	const templateData = {
+		name: user.name,
+		email: user.email,
+		otp: otpValue,
+		expirationMinutes: PASSWORD_RESET_OTP_EXPIRATION_SECONDS / 60,
+		year: new Date().getFullYear(),
+	};
+
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: envVars.EMAIL_SENDER.SMTP_FROM,
+		to: user.email,
+		subject: "Password Reset OTP",
+		html,
+	});
+
+	return {
+		email,
+		expirationMinutes: PASSWORD_RESET_OTP_EXPIRATION_SECONDS / 60,
+	};
+};
+
+const resetPassword = async (payload: IResetPasswordPayload) => {
+	const { otp, newPassword } = payload;
+	const email = payload.email.trim().toLowerCase();
+
+	const user = await prisma.user.findUnique({
+		where: { email },
+	});
+
+	if (
+		!user ||
+		user.isDeleted ||
+		user.status === UserStatus.DELETED ||
+		user.status === UserStatus.BANNED
+	) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Invalid or expired OTP",
+		);
+	}
+
+	const otpKey = `password-reset-otp:${email}`;
+	const storedOtp = await redisClient.get(otpKey);
+
+	if (!storedOtp || storedOtp !== otp) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
+	}
+
+	const hashedPassword = await bcrypt.hash(
+		newPassword,
+		Number(envVars.BCRYPT_SALT_ROUNDS),
+	);
+
+	const updatedUser = await prisma.user.update({
+		where: { id: user.id },
+		data: {
+			passwordHash: hashedPassword,
+			needPasswordChange: false,
+		},
+		omit: { passwordHash: true },
+	});
+
+	await redisClient.del(otpKey);
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/password-reset-confirmation.ejs",
+	);
+
+	const templateData = {
+		name: updatedUser.name,
+		email: updatedUser.email,
+		appUrl: envVars.FRONTEND_URL,
+		year: new Date().getFullYear(),
+	};
+
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: envVars.EMAIL_SENDER.SMTP_FROM,
+		to: updatedUser.email,
+		subject: "Your Password Has Been Changed",
+		html,
+	});
+
+	return updatedUser;
+};
+
 const refreshToken = async (refreshToken: string) => {
 	if (!refreshToken) {
 		throw new AppError(
@@ -302,5 +431,7 @@ export const authService = {
 	sendEmailVerificationOtp,
 	getMe,
 	refreshToken,
+	forgotPassword,
+	resetPassword,
 	verifyEmail,
 };

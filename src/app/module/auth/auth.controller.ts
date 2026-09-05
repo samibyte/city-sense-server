@@ -122,11 +122,36 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const forgotPassword = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const result = await authService.forgotPassword(payload);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message:
+			"If an account exists with this email, a password reset OTP has been sent.",
+		data: result,
+	});
+});
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const result = await authService.resetPassword(payload);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Password reset successfully",
+		data: result,
+	});
+});
+
 export const authController = {
 	loginUser,
 	registerCitizen,
 	sendEmailVerificationOtp,
 	getMe,
 	refreshToken,
+	forgotPassword,
+	resetPassword,
 	verifyEmail,
 };
