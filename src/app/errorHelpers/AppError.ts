@@ -1,16 +1,17 @@
 class AppError extends Error {
-  public statusCode: number;
+	public statusCode: number;
 
-  constructor(statusCode: number, message: string, stack = "") {
-    super(message); // Error("My Error Message")
-    this.statusCode = statusCode;
+	constructor(statusCode: number, message: string, stack = "") {
+		super(message);
+		this.statusCode = statusCode;
+		this.name = this.constructor.name;
 
-    if (stack) {
-      this.stack = stack;
-    } else {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
+		if (stack) {
+			this.stack = stack;
+		} else {
+			Error.captureStackTrace(this, this.constructor);
+		}
+	}
 }
 
 export default AppError;
