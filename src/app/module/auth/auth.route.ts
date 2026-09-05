@@ -12,3 +12,9 @@ authRouter.post(
 	validateRequest(UserValidation.CitizenRegisterZodSchema),
 	authController.registerCitizen,
 );
+
+authRouter.post(
+	"/login",
+	validateRequest(UserValidation.LoginZodSchema),
+	authController.loginUser,
+);

@@ -10,7 +10,34 @@ import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 import { generateAuthTokens } from "../../utils/auth-token";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
-import type { IRegisterCitizenPayload } from "./auth.interface";
+import type { ILoginPayload, IRegisterCitizenPayload } from "./auth.interface";
+
+const loginUser = async (payload: ILoginPayload) => {
+	const { email, password } = payload;
+
+	const user = await prisma.user.getActiveUserOrThrow(email);
+	const passwordMatched = await bcrypt.compare(
+		password,
+		user.passwordHash as string,
+	);
+
+	if (!passwordMatched) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password");
+	}
+
+	const jwtPayload = {
+		userId: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
+	};
+
+	const authTokens = generateAuthTokens(jwtPayload);
+
+	return {
+		...authTokens,
+	};
+};
 
 const registerCitizen = async (
 	payload: IRegisterCitizenPayload,
@@ -79,5 +106,6 @@ const registerCitizen = async (
 };
 
 export const authService = {
+	loginUser,
 	registerCitizen,
 };
