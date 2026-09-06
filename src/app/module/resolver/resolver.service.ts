@@ -18,6 +18,39 @@ const applyAsResolver = async (
 	resume: Express.Multer.File | null,
 	additionalFiles: Express.Multer.File[],
 ) => {
+	if (!resume) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Resume is required to submit a resolver application",
+		);
+	}
+
+	const allowedMimeTypes = [
+		"application/pdf",
+		"application/msword",
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		"image/jpeg",
+		"image/png",
+	];
+
+	if (!allowedMimeTypes.includes(resume.mimetype)) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Resume must be a PDF, DOC, DOCX, JPG, or PNG file",
+		);
+	}
+
+	if (resume.size > 5 * 1024 * 1024) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Resume must be less than 5MB");
+	}
+
+	if (additionalFiles.length > 10) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"You can upload at most 10 supporting files",
+		);
+	}
+
 	const userExists = await prisma.user.findByEmail(payload.user.email);
 
 	if (userExists) {
@@ -117,34 +150,38 @@ const applyAsResolver = async (
 				},
 			},
 		},
-
-		include: {
-			resolver: true,
+		omit: {
+			passwordHash: true,
+			googleId: true,
+			profileUrl: true,
+			profilePublicId: true,
+			deletedAt: true,
+			isDeleted: true,
 		},
-	});
-
-	const expirationSeconds = 60 * 60;
-
-	const otpKey = `resolver-application-otp:${payload.user.email}`;
-	const otpValue = crypto.randomInt(100000, 1000000).toString();
-
-	await redisClient.set(otpKey, otpValue, {
-		expiration: {
-			type: "EX",
-			value: expirationSeconds,
+		include: {
+			resolver: {
+				select: {
+					id: true,
+					bio: true,
+					resume: true,
+					verificationStatus: true,
+					departmentId: true,
+					userId: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
 		},
 	});
 
 	const templatePath = path.join(
 		process.cwd(),
-		"src/app/templates/registration-user-otp.ejs",
+		"src/app/templates/resolver-application.ejs",
 	);
 
 	const templateData = {
 		name: payload.user.name,
 		email: payload.user.email,
-		otp: otpValue,
-		expirationMinutes: expirationSeconds / 60,
 	};
 
 	const html = await ejs.renderFile(templatePath, templateData);
@@ -152,7 +189,7 @@ const applyAsResolver = async (
 	await transporter.sendMail({
 		from: envVars.EMAIL_SENDER.SMTP_FROM,
 		to: payload.user.email,
-		subject: "Resolver Application - Email Verification",
+		subject: "Your Resolver Application Is Under Review",
 		html,
 	});
 

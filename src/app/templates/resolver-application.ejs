@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Resolver Application Review</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #333;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .highlight {
+        color: #1d4ed8;
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Your Resolver Application Is Under Review</h2>
+      <p>Hello <%= name %>,</p>
+      <p>
+        Thank you for applying to become a resolver with us. We appreciate the
+        time and effort you invested in submitting your application.
+      </p>
+      <p>
+        Your application is currently being reviewed by our team. We are
+        carefully assessing each submission, and we will get to yours shortly.
+      </p>
+      <p>
+        We appreciate your patience and understanding while we complete the
+        review process. We will be in touch as soon as a decision has been made.
+      </p>
+      <p>Thank you again for your interest in joining our team.</p>
+      <p>
+        Best regards,<br />
+        <span class="highlight">City Sense Team</span>
+      </p>
+      <div class="footer">
+        &copy; <%= new Date().getFullYear() %> City Sense. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
