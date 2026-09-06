@@ -83,6 +83,11 @@ const loginUser = async (payload: ILoginPayload) => {
 		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password");
 	}
 
+	await prisma.user.update({
+		where: { id: user.id },
+		data: { lastLoginAt: new Date() },
+	});
+
 	const jwtPayload = {
 		userId: user.id,
 		name: user.name,
@@ -173,10 +178,7 @@ const sendEmailVerificationOtp = async (
 	const user = await prisma.user.getActiveUserOrThrow(email);
 
 	if (user.emailVerified) {
-		throw new AppError(
-			httpStatus.BAD_REQUEST,
-			"Email is already verified",
-		);
+		throw new AppError(httpStatus.BAD_REQUEST, "Email is already verified");
 	}
 
 	const result = await sendEmailVerificationOtpMail(user);
@@ -257,10 +259,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 		user.status === UserStatus.DELETED ||
 		user.status === UserStatus.BANNED
 	) {
-		throw new AppError(
-			httpStatus.UNAUTHORIZED,
-			"Invalid or expired OTP",
-		);
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or expired OTP");
 	}
 
 	const otpKey = `password-reset-otp:${email}`;
@@ -312,10 +311,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 
 const refreshToken = async (refreshToken: string) => {
 	if (!refreshToken) {
-		throw new AppError(
-			httpStatus.UNAUTHORIZED,
-			"Refresh token is required",
-		);
+		throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is required");
 	}
 
 	const verifiedToken = jwtUtils.verifyToken(
@@ -365,7 +361,11 @@ const getMe = async (userId: string) => {
 		omit: { passwordHash: true },
 		include: {
 			citizen: true,
-			resolver: true,
+			resolver: {
+				include: {
+					department: true,
+				},
+			},
 		},
 	});
 
