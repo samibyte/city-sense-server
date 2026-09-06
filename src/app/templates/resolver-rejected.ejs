@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Resolver Application Update</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #333;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .highlight {
+        color: #1d4ed8;
+        font-weight: bold;
+      }
+      .reason {
+        margin: 20px 0;
+        padding: 16px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        color: #b91c1c;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>An Update on Your Resolver Application</h2>
+      <p>Hello <%= name %>,</p>
+      <p>
+        Thank you for applying to become a resolver with City Sense. After
+        careful review, we regret to inform you that we are unable to approve
+        your application at this time.
+      </p>
+      <p>
+        Our team provided the following reason for the decision:
+      </p>
+      <div class="reason">
+        <p><%= rejectionReason %></p>
+      </div>
+      <p>
+        We encourage you to address the areas mentioned above and consider
+        applying again in the future. If you have any questions, feel free to
+        reach out to us.
+      </p>
+      <p>
+        Best regards,<br />
+        <span class="highlight">City Sense Team</span>
+      </p>
+      <div class="footer">&copy; <%= year %> City Sense. All rights reserved.</div>
+    </div>
+  </body>
+</html>

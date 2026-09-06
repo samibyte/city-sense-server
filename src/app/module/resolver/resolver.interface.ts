@@ -10,3 +10,9 @@ export interface IApplyAsResolverPayload {
 		departmentId: string;
 	};
 }
+
+export interface IReviewApplicationPayload {
+	resolverId: string;
+	verificationStatus: "APPROVED" | "REJECTED";
+	rejectionReason?: string;
+}

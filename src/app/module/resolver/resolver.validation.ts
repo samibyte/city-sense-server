@@ -22,3 +22,23 @@ export const ApplyAsResolverZodSchema = z.object({
 		departmentId: z.string("Please provide departmentId"),
 	}),
 });
+
+export const ReviewApplicationZodSchema = z
+	.object({
+		resolverId: z.string("Please provide resolverId").trim().min(1),
+		verificationStatus: z.enum(["APPROVED", "REJECTED"]),
+		rejectionReason: z
+			.string("Please provide rejectionReason")
+			.trim()
+			.min(5, "Rejection reason must be at least 5 characters long")
+			.optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.verificationStatus === "REJECTED" && !data.rejectionReason) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "rejectionReason is required when rejecting an application",
+				path: ["rejectionReason"],
+			});
+		}
+	});

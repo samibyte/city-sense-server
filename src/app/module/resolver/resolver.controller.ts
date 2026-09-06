@@ -37,6 +37,24 @@ const applyAsResolver = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const reviewApplication = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await resolverService.reviewApplication(
+		req.body,
+		req.user,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Resolver application reviewed successfully",
+		data: result,
+	});
+});
+
 export const resolverController = {
 	applyAsResolver,
+	reviewApplication,
 };
