@@ -1,0 +1,27 @@
+model Service {
+  id                String      @id @default(uuid())
+  name              String
+  description       String
+  price             Decimal
+  estimatedDuration Float?
+  isPaid            Boolean     @default(false)
+  serviceType       ServiceType @default(FREE)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  departmentId String
+  department   Department      @relation(fields: [departmentId], references: [id])
+  categoryId   String
+  category     ServiceCategory @relation(fields: [categoryId], references: [id])
+  requests     Request[]
+  payments     Payment[]
+
+  @@index([departmentId], name: "idx_service_department")
+  @@index([categoryId], name: "idx_service_category")
+  @@map("services")
+}

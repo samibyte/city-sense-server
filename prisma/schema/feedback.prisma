@@ -1,0 +1,20 @@
+model Feedback {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  requestId  String          @unique
+  request    Request         @relation(fields: [requestId], references: [id])
+  citizenId  String
+  citizen    CitizenProfile  @relation(fields: [citizenId], references: [id])
+  resolverId String
+  resolver   ResolverProfile @relation("FeedbackResolver", fields: [resolverId], references: [id])
+
+  @@index([citizenId], name: "idx_feedback_citizen")
+  @@index([resolverId], name: "idx_feedback_resolver")
+  @@index([rating], name: "idx_feedback_rating")
+  @@map("feedbacks")
+}

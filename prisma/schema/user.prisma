@@ -1,5 +1,5 @@
 model User {
-  id                 String          @id @default(uuid())
+  id                 String       @id @default(uuid())
   name               String
   email              String
   passwordHash       String?
@@ -8,19 +8,27 @@ model User {
   profilePublicId    String?
   googleId           String?
   authProvider       AuthProvider
-  emailVerified      Boolean         @default(false)
-  role               Role            @default(CITIZEN)
-  status             UserStatus      @default(ACTIVE)
-  needPasswordChange Boolean         @default(false)
-  isDeleted          Boolean         @default(false)
+  emailVerified      Boolean      @default(false)
+  role               Role         @default(CITIZEN)
+  status             UserStatus   @default(ACTIVE)
+  needPasswordChange Boolean      @default(false)
+  isDeleted          Boolean      @default(false)
   deletedAt          DateTime?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  lastLoginAt        DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
   //relations
-  citizen            CitizenProfile?
-  resolver           ResolverProfile?
+  citizen       CitizenProfile?
+  resolver      ResolverProfile?
+  assignments   Assignment[]           @relation("AssignmentAdmin")
+  reassignments Assignment[]           @relation("ReassignmentAdmin")
+  statusHistory RequestStatusHistory[]
 
   @@unique([email])
+  @@unique([googleId])
   @@index([email], name: "idx_email")
+  @@index([role], name: "idx_role")
+  @@index([status], name: "idx_status")
   @@map("users")
 }

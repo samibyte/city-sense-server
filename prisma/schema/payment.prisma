@@ -1,0 +1,25 @@
+model Payment {
+  id              String         @id @default(uuid())
+  amount          Decimal
+  status          PaymentStatus  @default(PENDING)
+  transactionId   String
+  paidAt          DateTime?
+  paymentMethod   PaymentMethod?
+  paymentProvider String? // e.g., "stripe", "razorpay"
+  refundedAt      DateTime?
+  refundReason    String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  requestId String?         @unique
+  request   Request?        @relation(fields: [requestId], references: [id])
+  citizenId String?
+  citizen   CitizenProfile? @relation(fields: [citizenId], references: [id])
+  serviceId String?
+  service   Service?        @relation(fields: [serviceId], references: [id])
+
+  @@index([citizenId], name: "idx_payment_citizen")
+  @@index([status], name: "idx_payment_status")
+  @@map("payments")
+}

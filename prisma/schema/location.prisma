@@ -1,0 +1,13 @@
+model Location {
+  id        String  @id @default(uuid())
+  address   String
+  latitude  String?
+  longitude String?
+  area      String
+  city      String
+
+  requests Request[]
+
+  @@index([city, area], name: "idx_location_city_area")
+  @@map("locations")
+}

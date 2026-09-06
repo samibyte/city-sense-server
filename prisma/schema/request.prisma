@@ -1,0 +1,48 @@
+model Request {
+  id                String        @id @default(uuid())
+  requestNumber     String        @unique
+  type              RequestType
+  title             String
+  description       String
+  requestAttachment Json? // Array of file URLs or file metadata // Stores: [{ url: "...", publicId: "..." }]
+  status            RequestStatus @default(SUBMITTED)
+  priority          Priority?
+
+  // SLA and deadlines
+  slaDeadline DateTime?
+  resolvedAt  DateTime?
+  completedAt DateTime?
+
+  // Assignment tracking
+  assignedResolverId String?
+  assignedByAdminId  String?
+  assignedAt         DateTime?
+  rejectReason       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //relations
+  citizenId  String
+  citizen    CitizenProfile  @relation(fields: [citizenId], references: [id])
+  serviceId  String?
+  service    Service?        @relation(fields: [serviceId], references: [id])
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id])
+  locationId String
+  location   Location        @relation(fields: [locationId], references: [id])
+
+  // Relations
+  assignments   Assignment[]
+  statusHistory RequestStatusHistory[]
+  payment       Payment?
+  feedback      Feedback?
+
+  @@index([status], name: "idx_request_status")
+  @@index([citizenId], name: "idx_request_citizen")
+  @@index([assignedResolverId], name: "idx_request_assigned_resolver")
+  @@index([requestNumber], name: "idx_request_number")
+  @@index([categoryId], name: "idx_request_category")
+  @@index([createdAt], name: "idx_request_created_at")
+  @@map("requests")
+}

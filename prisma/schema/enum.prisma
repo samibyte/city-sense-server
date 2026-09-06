@@ -20,3 +20,57 @@ enum ResolverVerificationStatus {
   APPROVED
   REJECTED
 }
+
+enum RequestType {
+  COMPLAINT
+  SERVICE_REQUEST
+}
+
+enum RequestStatus {
+  SUBMITTED
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  ON_HOLD
+  RESOLVED
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum AssignmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  REASSIGNED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CARD
+  UPI
+  NET_BANKING
+  WALLET
+  CASH
+}
+
+enum ServiceType {
+  FREE
+  PAID
+}

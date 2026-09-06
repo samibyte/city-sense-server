@@ -1,0 +1,21 @@
+model RequestStatusHistory {
+  id String @id @default(uuid())
+
+  status         RequestStatus
+  previousStatus RequestStatus?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  requestId       String
+  request         Request @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  changedByUserId String
+  changedBy       User    @relation(fields: [changedByUserId], references: [id])
+
+  @@index([requestId], name: "idx_status_history_request")
+  @@index([changedByUserId], name: "idx_status_history_user")
+  @@index([createdAt], name: "idx_status_history_created_at")
+  @@map("request_status_history")
+}

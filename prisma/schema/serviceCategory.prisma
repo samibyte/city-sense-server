@@ -1,0 +1,14 @@
+model ServiceCategory {
+  id          String @id @default(uuid())
+  name        String
+  description String
+
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  services     Service[]
+  requests     Request[]
+
+  @@index([departmentId], name: "idx_service_category_department")
+  @@index([name], name: "idx_service_category_name")
+  @@map("service_categories")
+}
