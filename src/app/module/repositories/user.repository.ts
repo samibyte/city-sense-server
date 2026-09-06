@@ -1,17 +1,12 @@
 import httpStatus from "http-status";
-import {
-	AuthProvider,
-	Prisma,
-	Role,
-	UserStatus,
-} from "../../../generated/prisma/client";
+import type { AuthProvider, Role } from "../../../generated/prisma/client";
+import { Prisma, UserStatus } from "../../../generated/prisma/client";
 import AppError from "../../errorHelpers/AppError";
-import type { IRegisterCitizenPayload } from "../auth/auth.interface";
 
-export type ICreateCitizenWithCredsPayload = Omit<
-	IRegisterCitizenPayload,
-	"password"
-> & {
+export type ICreateCitizenWithCredsPayload = {
+	name: string;
+	email: string;
+	phone?: string;
 	profileUrl?: string | null;
 	profilePublicId?: string | null;
 	passwordHash: string;
@@ -19,6 +14,11 @@ export type ICreateCitizenWithCredsPayload = Omit<
 	role: Role;
 	status: UserStatus;
 	emailVerified: boolean;
+	citizen: {
+		create: {
+			address?: string;
+		};
+	};
 };
 
 export const userRepository = Prisma.defineExtension({

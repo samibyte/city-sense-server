@@ -13,7 +13,7 @@ declare global {
 		interface Request {
 			user?: {
 				email: string;
-				username: string;
+				name?: string;
 				userId: string;
 				role: Role;
 			};
@@ -44,11 +44,13 @@ export const auth = (...requiredRoles: Role[]) => {
 			);
 
 			if (!verifiedToken.success) {
-				throw new Error(verifiedToken.error);
+				throw new AppError(
+					httpStatus.UNAUTHORIZED,
+					verifiedToken.error ?? "Invalid or expired token",
+				);
 			}
 
-			const { email, username, userId, role } =
-				verifiedToken.data as JwtPayload;
+			const { email, name, userId, role } = verifiedToken.data as JwtPayload;
 
 			if (requiredRoles.length && !requiredRoles.includes(role)) {
 				throw new AppError(
@@ -60,15 +62,20 @@ export const auth = (...requiredRoles: Role[]) => {
 			const user = await prisma.user.findUnique({
 				where: {
 					id: userId,
-					email,
-					role,
 				},
 			});
 
-			if (!user) {
+			if (!user || user.email !== email || user.role !== role) {
 				throw new AppError(
-					httpStatus.BAD_REQUEST,
+					httpStatus.UNAUTHORIZED,
 					"User not found. Please log in again.",
+				);
+			}
+
+			if (user.isDeleted || user.status === "DELETED") {
+				throw new AppError(
+					httpStatus.UNAUTHORIZED,
+					"Your account has been deleted.",
 				);
 			}
 
@@ -81,7 +88,7 @@ export const auth = (...requiredRoles: Role[]) => {
 
 			req.user = {
 				email,
-				username,
+				name: name,
 				userId,
 				role,
 			};
