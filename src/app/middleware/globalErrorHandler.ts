@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
-import { Prisma } from "../../generated/prisma/client";
-import { envVars } from "../config/env";
+import { Prisma } from "../../generated/prisma/client.js";
+import { envVars } from "../config/env.js";
 
 export const globalErrorHandler = async (
 	err: unknown,
@@ -29,23 +29,27 @@ export const globalErrorHandler = async (
 		statusCode = httpStatus.BAD_REQUEST;
 		errorMessage = "You have provided incorrect field type or missing fields";
 	} else if (err instanceof Prisma.PrismaClientKnownRequestError) {
-		if (err.code === "P2002") {
+		// Type assertion for err to ensure type safety
+		const knownError = err as Prisma.PrismaClientKnownRequestError;
+		if (knownError.code === "P2002") {
 			statusCode = httpStatus.BAD_REQUEST;
 			errorMessage = "Duplicate Key Error";
-		} else if (err.code === "P2003") {
+		} else if (knownError.code === "P2003") {
 			statusCode = httpStatus.BAD_REQUEST;
 			errorMessage = "Foreign key constraint failed";
-		} else if (err.code === "P2025") {
+		} else if (knownError.code === "P2025") {
 			statusCode = httpStatus.BAD_REQUEST;
 			errorMessage =
 				"An operation failed because it depends on one or more records that were required but not found.";
 		}
 	} else if (err instanceof Prisma.PrismaClientInitializationError) {
-		if (err.errorCode === "P1000") {
+		// Type assertion for err to ensure type safety
+		const initError = err as Prisma.PrismaClientInitializationError;
+		if (initError.errorCode === "P1000") {
 			statusCode = httpStatus.UNAUTHORIZED;
 			errorMessage =
 				"Authentication failed against database server. Please Check Your Credentials";
-		} else if (err.errorCode === "P1001") {
+		} else if (initError.errorCode === "P1001") {
 			statusCode = httpStatus.BAD_REQUEST;
 			errorMessage = "Can't reach database server";
 		}

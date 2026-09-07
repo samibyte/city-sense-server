@@ -1,14 +1,14 @@
 import crypto from "node:crypto";
 import httpStatus from "http-status";
-import { RequestStatus, Role } from "../../../generated/prisma/enums";
-import AppError from "../../errorHelpers/AppError";
-import { prisma } from "../../lib/prisma";
-import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
+import { RequestStatus, Role } from "../../../generated/prisma/enums.js";
+import AppError from "../../errorHelpers/AppError.js";
+import { prisma } from "../../lib/prisma.js";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload.js";
 import type {
 	ICreateFeedbackPayload,
 	ICreateRequestPayload,
 	IGetMyRequestsQuery,
-} from "./request.interface";
+} from "./request.interface.js";
 
 const createRequest = async (
 	userId: string,

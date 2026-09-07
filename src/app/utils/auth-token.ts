@@ -1,6 +1,6 @@
 import type { SignOptions } from "jsonwebtoken";
-import { envVars } from "../config/env";
-import { jwtUtils } from "./jwt";
+import { envVars } from "../config/env.js";
+import { jwtUtils } from "./jwt.js";
 
 interface IAuthPayload {
 	userId: string;

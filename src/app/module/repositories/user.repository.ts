@@ -1,7 +1,8 @@
 import httpStatus from "http-status";
-import type { AuthProvider, Role } from "../../../generated/prisma/client";
-import { Prisma, UserStatus } from "../../../generated/prisma/client";
-import AppError from "../../errorHelpers/AppError";
+import type { AuthProvider, Role } from "../../../generated/prisma/enums.js";
+import { UserStatus } from "../../../generated/prisma/enums.js";
+import { Prisma } from "../../../generated/prisma/client.js";
+import AppError from "../../errorHelpers/AppError.js";
 
 export type ICreateCitizenWithCredsPayload = {
 	name: string;

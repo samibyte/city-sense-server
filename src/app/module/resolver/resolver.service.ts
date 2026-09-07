@@ -10,19 +10,19 @@ import {
 	RequestStatus,
 	ResolverVerificationStatus,
 	Role,
-} from "../../../generated/prisma/enums";
-import { envVars } from "../../config/env";
-import AppError from "../../errorHelpers/AppError";
-import { cloudinary } from "../../lib/cloudinary";
-import { transporter } from "../../lib/lib";
-import { prisma } from "../../lib/prisma";
+} from "../../../generated/prisma/enums.js";
+import { envVars } from "../../config/env.js";
+import AppError from "../../errorHelpers/AppError.js";
+import { cloudinary } from "../../lib/cloudinary.js";
+import { transporter } from "../../lib/lib.js";
+import { prisma } from "../../lib/prisma.js";
 import type {
 	IApplyAsResolverPayload,
 	IGetApplicationsQuery,
 	IGetAssignmentsQuery,
 	IReviewApplicationPayload,
 	IUpdateAssignmentStatusPayload,
-} from "./resolver.interface";
+} from "./resolver.interface.js";
 
 const applyAsResolver = async (
 	payload: IApplyAsResolverPayload,

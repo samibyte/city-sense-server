@@ -1,8 +1,8 @@
-import app from "./app";
-import { envVars } from "./app/config/env";
-import { transporter } from "./app/lib/lib";
-import { prisma } from "./app/lib/prisma";
-import { redisClient } from "./app/lib/redis-client";
+import app from "./app.js";
+import { envVars } from "./app/config/env.js";
+import { transporter } from "./app/lib/lib.js";
+import { prisma } from "./app/lib/prisma.js";
+import { redisClient } from "./app/lib/redis-client.js";
 
 const PORT = Number(envVars.PORT);
 

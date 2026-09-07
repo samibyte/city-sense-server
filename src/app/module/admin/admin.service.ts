@@ -5,16 +5,16 @@ import {
 	ResolverVerificationStatus,
 	Role,
 	type UserStatus,
-} from "../../../generated/prisma/enums";
-import AppError from "../../errorHelpers/AppError";
-import { prisma } from "../../lib/prisma";
+} from "../../../generated/prisma/enums.js";
+import AppError from "../../errorHelpers/AppError.js";
+import { prisma } from "../../lib/prisma.js";
 import type {
 	IAssignRequestPayload,
 	IGetRequestsAdminQuery,
 	IGetUsersAdminQuery,
 	IReassignRequestPayload,
 	IUpdateRequestStatusAdminPayload,
-} from "./admin.interface";
+} from "./admin.interface.js";
 
 const getAllRequests = async (query: IGetRequestsAdminQuery) => {
 	const page = Number(query.page) || 1;
@@ -245,7 +245,7 @@ const reassignRequest = async (
 	}
 
 	const activeAssignment = request.assignments.find(
-		(a) =>
+		(a: any) =>
 			a.status === AssignmentStatus.PENDING ||
 			a.status === AssignmentStatus.ACCEPTED ||
 			a.status === AssignmentStatus.IN_PROGRESS,

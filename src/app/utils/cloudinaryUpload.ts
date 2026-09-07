@@ -1,5 +1,5 @@
 import type { UploadApiOptions, UploadApiResponse } from "cloudinary";
-import { cloudinary } from "../lib/cloudinary";
+import { cloudinary } from "../lib/cloudinary.js";
 
 export const uploadToCloudinary = (
 	buffer: Buffer,

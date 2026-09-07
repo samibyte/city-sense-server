@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import type { JwtPayload } from "jsonwebtoken";
-import type { Role } from "../../generated/prisma/enums";
-import { envVars } from "../config/env";
-import AppError from "../errorHelpers/AppError";
-import { prisma } from "../lib/prisma";
-import { catchAsync } from "../utils/catchAsync";
-import { jwtUtils } from "../utils/jwt";
+import type { Role } from "../../generated/prisma/enums.js";
+import { envVars } from "../config/env.js";
+import AppError from "../errorHelpers/AppError.js";
+import { prisma } from "../lib/prisma.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import { jwtUtils } from "../utils/jwt.js";
 
 declare global {
 	namespace Express {

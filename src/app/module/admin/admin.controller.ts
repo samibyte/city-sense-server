@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
 import httpStatus from "http-status";
-import AppError from "../../errorHelpers/AppError";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { adminService } from "./admin.service";
+import AppError from "../../errorHelpers/AppError.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { adminService } from "./admin.service.js";
 
 const getAllRequests = catchAsync(async (req: Request, res: Response) => {
 	const result = await adminService.getAllRequests(req.query);

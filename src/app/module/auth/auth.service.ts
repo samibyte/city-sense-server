@@ -8,15 +8,15 @@ import {
 	AuthProvider,
 	Role,
 	UserStatus,
-} from "../../../generated/prisma/enums";
-import { envVars } from "../../config/env";
-import AppError from "../../errorHelpers/AppError";
-import { transporter } from "../../lib/lib";
-import { prisma } from "../../lib/prisma";
-import { redisClient } from "../../lib/redis-client";
-import { generateAuthTokens } from "../../utils/auth-token";
-import { jwtUtils } from "../../utils/jwt";
-import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
+} from "../../../generated/prisma/enums.js";
+import { envVars } from "../../config/env.js";
+import AppError from "../../errorHelpers/AppError.js";
+import { transporter } from "../../lib/lib.js";
+import { prisma } from "../../lib/prisma.js";
+import { redisClient } from "../../lib/redis-client.js";
+import { generateAuthTokens } from "../../utils/auth-token.js";
+import { jwtUtils } from "../../utils/jwt.js";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload.js";
 import type {
 	IForgotPasswordPayload,
 	ILoginPayload,
@@ -24,7 +24,7 @@ import type {
 	IResetPasswordPayload,
 	ISendEmailVerificationOtpPayload,
 	IVerifyEmailPayload,
-} from "./auth.interface";
+} from "./auth.interface.js";
 
 const EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS = 60 * 10;
 const PASSWORD_RESET_OTP_EXPIRATION_SECONDS = 60 * 15;

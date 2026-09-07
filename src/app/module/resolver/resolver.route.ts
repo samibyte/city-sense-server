@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { Role } from "../../../generated/prisma/enums";
-import { upload } from "../../lib/multer";
-import { auth } from "../../middleware/checkAuth";
-import { validateRequest } from "../../middleware/validateRequest";
-import { resolverController } from "./resolver.controller";
+import { Role } from "../../../generated/prisma/enums.js";
+import { upload } from "../../lib/multer.js";
+import { auth } from "../../middleware/checkAuth.js";
+import { validateRequest } from "../../middleware/validateRequest.js";
+import { resolverController } from "./resolver.controller.js";
 import {
 	RejectAssignmentZodSchema,
 	ReviewApplicationZodSchema,
 	UpdateAssignmentStatusZodSchema,
-} from "./resolver.validation";
+} from "./resolver.validation.js";
 
 export const resolverRouter = Router();
 

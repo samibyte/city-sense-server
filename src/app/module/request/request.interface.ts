@@ -2,7 +2,7 @@ import type {
 	Priority,
 	RequestStatus,
 	RequestType,
-} from "../../../generated/prisma/enums";
+} from "../../../generated/prisma/enums.js";
 
 export interface ICreateRequestPayload {
 	type: RequestType;

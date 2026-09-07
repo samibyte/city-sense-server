@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import httpStatus from "http-status";
-import AppError from "../../errorHelpers/AppError";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { requestService } from "./request.service";
-import { CreateRequestZodSchema } from "./request.validation";
+import AppError from "../../errorHelpers/AppError.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { requestService } from "./request.service.js";
+import { CreateRequestZodSchema } from "./request.validation.js";
 
 const createRequest = catchAsync(async (req: Request, res: Response) => {
 	if (!req.user) {

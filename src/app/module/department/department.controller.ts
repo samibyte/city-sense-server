@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import httpStatus from "http-status";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { departmentService } from "./department.service";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { departmentService } from "./department.service.js";
 
 const getAllDepartment = catchAsync(async (req: Request, res: Response) => {
 	const includeRelations = req.query.includeRelations !== "false";

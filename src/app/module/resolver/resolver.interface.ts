@@ -3,7 +3,7 @@ import type {
 	Priority,
 	RequestStatus,
 	ResolverVerificationStatus,
-} from "../../../generated/prisma/enums";
+} from "../../../generated/prisma/enums.js";
 
 export interface IApplyAsResolverPayload {
 	user: {

@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
-import AppError from "../../errorHelpers/AppError";
-import { prisma } from "../../lib/prisma";
+import AppError from "../../errorHelpers/AppError.js";
+import { prisma } from "../../lib/prisma.js";
 
 const getAllDepartment = async (includeRelations = false) => {
 	const departments = await prisma.department.findMany({

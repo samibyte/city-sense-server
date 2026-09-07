@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
-import { ServiceType } from "../../../generated/prisma/enums";
-import AppError from "../../errorHelpers/AppError";
-import { prisma } from "../../lib/prisma";
+import { ServiceType } from "../../../generated/prisma/enums.js";
+import AppError from "../../errorHelpers/AppError.js";
+import { prisma } from "../../lib/prisma.js";
 import type {
 	ICreateServiceCategoryPayload,
 	ICreateServicePayload,
@@ -9,7 +9,7 @@ import type {
 	IGetServicesQuery,
 	IUpdateServiceCategoryPayload,
 	IUpdateServicePayload,
-} from "./service.interface";
+} from "./service.interface.js";
 
 const createService = async (payload: ICreateServicePayload) => {
 	const department = await prisma.department.findUnique({

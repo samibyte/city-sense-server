@@ -6,15 +6,15 @@ import express, {
 	type Response,
 } from "express";
 import httpStatus from "http-status";
-import { envVars } from "./app/config/env";
-import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
-import { notFound } from "./app/middleware/notFound";
-import { adminRouter } from "./app/module/admin/admin.route";
-import { authRouter } from "./app/module/auth/auth.route";
-import { departmentRouter } from "./app/module/department/department.route";
-import { requestRouter } from "./app/module/request/request.route";
-import { resolverRouter } from "./app/module/resolver/resolver.route";
-import { serviceRouter } from "./app/module/service/service.route";
+import { envVars } from "./app/config/env.js";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler.js";
+import { notFound } from "./app/middleware/notFound.js";
+import { adminRouter } from "./app/module/admin/admin.route.js";
+import { authRouter } from "./app/module/auth/auth.route.js";
+import { departmentRouter } from "./app/module/department/department.route.js";
+import { requestRouter } from "./app/module/request/request.route.js";
+import { resolverRouter } from "./app/module/resolver/resolver.route.js";
+import { serviceRouter } from "./app/module/service/service.route.js";
 
 const app: Application = express();
 

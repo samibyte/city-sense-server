@@ -4,7 +4,7 @@ import type {
 	RequestType,
 	Role,
 	UserStatus,
-} from "../../../generated/prisma/enums";
+} from "../../../generated/prisma/enums.js";
 
 export interface IAssignRequestPayload {
 	requestId: string;

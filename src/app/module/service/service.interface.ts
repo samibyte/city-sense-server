@@ -1,4 +1,4 @@
-import type { ServiceType } from "../../../generated/prisma/enums";
+import type { ServiceType } from "../../../generated/prisma/enums.js";
 
 export interface ICreateServicePayload {
 	name: string;
