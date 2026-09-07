@@ -42,3 +42,23 @@ export const ReviewApplicationZodSchema = z
 			});
 		}
 	});
+
+export const RejectAssignmentZodSchema = z.object({
+	rejectedReason: z
+		.string()
+		.trim()
+		.min(5, "Rejection reason must be at least 5 characters long"),
+});
+
+export const UpdateAssignmentStatusZodSchema = z.object({
+	status: z.enum([
+		"PENDING",
+		"ACCEPTED",
+		"REJECTED",
+		"IN_PROGRESS",
+		"COMPLETED",
+		"REASSIGNED",
+		"CANCELLED",
+	]),
+	notes: z.string().trim().optional(),
+});

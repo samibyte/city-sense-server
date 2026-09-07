@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
+import { upload } from "../../lib/multer";
 import { auth } from "../../middleware/checkAuth";
 import { validateRequest } from "../../middleware/validateRequest";
-import { upload } from "../../lib/multer";
 import { resolverController } from "./resolver.controller";
-import { ReviewApplicationZodSchema } from "./resolver.validation";
+import {
+	RejectAssignmentZodSchema,
+	ReviewApplicationZodSchema,
+	UpdateAssignmentStatusZodSchema,
+} from "./resolver.validation";
 
 export const resolverRouter = Router();
 
@@ -17,9 +21,53 @@ resolverRouter.post(
 	resolverController.applyAsResolver,
 );
 
+resolverRouter.get(
+	"/applications",
+	auth(Role.ADMIN),
+	resolverController.getAllApplications,
+);
+
+resolverRouter.get(
+	"/applications/:id",
+	auth(Role.ADMIN),
+	resolverController.getApplicationById,
+);
+
 resolverRouter.patch(
 	"/application-review",
 	auth(Role.ADMIN),
 	validateRequest(ReviewApplicationZodSchema),
 	resolverController.reviewApplication,
+);
+
+resolverRouter.get(
+	"/assignments",
+	auth(Role.RESOLVER),
+	resolverController.getMyAssignments,
+);
+
+resolverRouter.get(
+	"/assignments/:id",
+	auth(Role.RESOLVER),
+	resolverController.getAssignmentById,
+);
+
+resolverRouter.patch(
+	"/assignments/:id/accept",
+	auth(Role.RESOLVER),
+	resolverController.acceptAssignment,
+);
+
+resolverRouter.patch(
+	"/assignments/:id/reject",
+	auth(Role.RESOLVER),
+	validateRequest(RejectAssignmentZodSchema),
+	resolverController.rejectAssignment,
+);
+
+resolverRouter.patch(
+	"/assignments/:id/status",
+	auth(Role.RESOLVER),
+	validateRequest(UpdateAssignmentStatusZodSchema),
+	resolverController.updateAssignmentStatus,
 );

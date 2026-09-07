@@ -42,10 +42,7 @@ const reviewApplication = catchAsync(async (req: Request, res: Response) => {
 		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
 	}
 
-	const result = await resolverService.reviewApplication(
-		req.body,
-		req.user,
-	);
+	const result = await resolverService.reviewApplication(req.body, req.user);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -54,7 +51,127 @@ const reviewApplication = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getAllApplications = catchAsync(async (req: Request, res: Response) => {
+	const result = await resolverService.getAllApplications(req.query);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Resolver applications retrieved successfully",
+		data: result.applications,
+		meta: result.meta,
+	});
+});
+
+const getApplicationById = catchAsync(async (req: Request, res: Response) => {
+	const result = await resolverService.getApplicationById(
+		req.params.id as string,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Resolver application retrieved successfully",
+		data: result,
+	});
+});
+
+const getMyAssignments = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await resolverService.getMyAssignments(
+		req.user.userId,
+		req.query,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Assignments retrieved successfully",
+		data: result.assignments,
+		meta: result.meta,
+	});
+});
+
+const getAssignmentById = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await resolverService.getAssignmentById(
+		req.user.userId,
+		req.params.id as string,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Assignment retrieved successfully",
+		data: result,
+	});
+});
+
+const acceptAssignment = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await resolverService.acceptAssignment(
+		req.user.userId,
+		req.params.id as string,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Assignment accepted successfully",
+		data: result,
+	});
+});
+
+const rejectAssignment = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await resolverService.rejectAssignment(
+		req.user.userId,
+		req.params.id as string,
+		req.body.rejectedReason,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Assignment rejected successfully",
+		data: result,
+	});
+});
+
+const updateAssignmentStatus = catchAsync(
+	async (req: Request, res: Response) => {
+		if (!req.user) {
+			throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+		}
+
+		const result = await resolverService.updateAssignmentStatus(
+			req.user.userId,
+			req.params.id as string,
+			req.body,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			message: "Assignment status updated successfully",
+			data: result,
+		});
+	},
+);
+
 export const resolverController = {
 	applyAsResolver,
 	reviewApplication,
+	getAllApplications,
+	getApplicationById,
+	getMyAssignments,
+	getAssignmentById,
+	acceptAssignment,
+	rejectAssignment,
+	updateAssignmentStatus,
 };

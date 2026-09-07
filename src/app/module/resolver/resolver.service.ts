@@ -5,7 +5,9 @@ import httpStatus from "http-status";
 import crypto from "node:crypto";
 import path from "node:path";
 import {
+	AssignmentStatus,
 	AuthProvider,
+	RequestStatus,
 	ResolverVerificationStatus,
 	Role,
 } from "../../../generated/prisma/enums";
@@ -14,10 +16,12 @@ import AppError from "../../errorHelpers/AppError";
 import { cloudinary } from "../../lib/cloudinary";
 import { transporter } from "../../lib/lib";
 import { prisma } from "../../lib/prisma";
-import { redisClient } from "../../lib/redis-client";
 import type {
 	IApplyAsResolverPayload,
+	IGetApplicationsQuery,
+	IGetAssignmentsQuery,
 	IReviewApplicationPayload,
+	IUpdateAssignmentStatusPayload,
 } from "./resolver.interface";
 
 const applyAsResolver = async (
@@ -131,9 +135,11 @@ const applyAsResolver = async (
 		}),
 	);
 
+	const { address, ...userData } = payload.user;
+
 	const resolverApplication = await prisma.user.create({
 		data: {
-			...payload.user,
+			...userData,
 			authProvider: AuthProvider.CREDENTIAL,
 			role: Role.RESOLVER,
 			needPasswordChange: true,
@@ -159,15 +165,8 @@ const applyAsResolver = async (
 		},
 		include: {
 			resolver: {
-				select: {
-					id: true,
-					bio: true,
-					resume: true,
-					verificationStatus: true,
-					departmentId: true,
-					userId: true,
-					createdAt: true,
-					updatedAt: true,
+				include: {
+					department: true,
 				},
 			},
 		},
@@ -215,10 +214,7 @@ const reviewApplication = async (
 	});
 
 	if (!resolverApplication) {
-		throw new AppError(
-			httpStatus.NOT_FOUND,
-			"Resolver application not found",
-		);
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver application not found");
 	}
 
 	if (
@@ -336,7 +332,426 @@ const reviewApplication = async (
 	return { ...updatedApplication, email: resolverApplication.user.email };
 };
 
+const getAllApplications = async (query: IGetApplicationsQuery) => {
+	const page = Number(query.page) || 1;
+	const limit = Number(query.limit) || 10;
+	const skip = (page - 1) * limit;
+
+	const where: Record<string, unknown> = {
+		isDeleted: false,
+	};
+
+	if (query.status) {
+		where.verificationStatus = query.status;
+	}
+
+	if (query.departmentId) {
+		where.departmentId = query.departmentId;
+	}
+
+	const [applications, total] = await Promise.all([
+		prisma.resolverProfile.findMany({
+			where,
+			skip,
+			take: limit,
+			orderBy: { createdAt: "desc" },
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						phone: true,
+						profileUrl: true,
+						status: true,
+						createdAt: true,
+					},
+				},
+				department: true,
+			},
+		}),
+		prisma.resolverProfile.count({ where }),
+	]);
+
+	return {
+		applications,
+		meta: {
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		},
+	};
+};
+
+const getApplicationById = async (id: string) => {
+	const application = await prisma.resolverProfile.findUnique({
+		where: { id },
+		include: {
+			user: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					phone: true,
+					profileUrl: true,
+					status: true,
+					createdAt: true,
+				},
+			},
+			department: true,
+		},
+	});
+
+	if (!application) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver application not found");
+	}
+
+	return application;
+};
+
+const getMyAssignments = async (
+	userId: string,
+	query: IGetAssignmentsQuery,
+) => {
+	const resolver = await prisma.resolverProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!resolver) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver profile not found");
+	}
+
+	const page = Number(query.page) || 1;
+	const limit = Number(query.limit) || 10;
+	const skip = (page - 1) * limit;
+
+	const where: Record<string, unknown> = {
+		resolverId: resolver.id,
+	};
+
+	if (query.status) {
+		where.status = query.status;
+	}
+
+	if (query.priority) {
+		where.priority = query.priority;
+	}
+
+	const [assignments, total] = await Promise.all([
+		prisma.assignment.findMany({
+			where,
+			skip,
+			take: limit,
+			orderBy: { createdAt: "desc" },
+			include: {
+				request: {
+					include: {
+						category: true,
+						service: true,
+						location: true,
+						citizen: {
+							include: {
+								user: {
+									select: {
+										id: true,
+										name: true,
+										email: true,
+										phone: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}),
+		prisma.assignment.count({ where }),
+	]);
+
+	return {
+		assignments,
+		meta: {
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		},
+	};
+};
+
+const getAssignmentById = async (userId: string, assignmentId: string) => {
+	const resolver = await prisma.resolverProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!resolver) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver profile not found");
+	}
+
+	const assignment = await prisma.assignment.findUnique({
+		where: { id: assignmentId },
+		include: {
+			request: {
+				include: {
+					category: true,
+					service: true,
+					location: true,
+					statusHistory: {
+						orderBy: { createdAt: "desc" },
+						include: {
+							changedBy: {
+								select: {
+									id: true,
+									name: true,
+									role: true,
+								},
+							},
+						},
+					},
+					citizen: {
+						include: {
+							user: {
+								select: {
+									id: true,
+									name: true,
+									email: true,
+									phone: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+
+	if (!assignment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Assignment not found");
+	}
+
+	if (assignment.resolverId !== resolver.id) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"You are not assigned to this request",
+		);
+	}
+
+	return assignment;
+};
+
+const acceptAssignment = async (userId: string, assignmentId: string) => {
+	const resolver = await prisma.resolverProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!resolver) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver profile not found");
+	}
+
+	const assignment = await prisma.assignment.findUnique({
+		where: { id: assignmentId },
+		include: { request: true },
+	});
+
+	if (!assignment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Assignment not found");
+	}
+
+	if (assignment.resolverId !== resolver.id) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"You are not assigned to this request",
+		);
+	}
+
+	if (assignment.status !== AssignmentStatus.PENDING) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			`Assignment cannot be accepted because its status is ${assignment.status}`,
+		);
+	}
+
+	const [updatedAssignment] = await prisma.$transaction([
+		prisma.assignment.update({
+			where: { id: assignment.id },
+			data: {
+				status: AssignmentStatus.ACCEPTED,
+				acceptedAt: new Date(),
+			},
+			include: {
+				request: true,
+			},
+		}),
+		prisma.request.update({
+			where: { id: assignment.requestId },
+			data: {
+				status: RequestStatus.ACCEPTED,
+			},
+		}),
+		prisma.requestStatusHistory.create({
+			data: {
+				requestId: assignment.requestId,
+				status: RequestStatus.ACCEPTED,
+				previousStatus: assignment.request.status,
+				notes: "Assignment accepted by resolver",
+				changedByUserId: userId,
+			},
+		}),
+	]);
+
+	return updatedAssignment;
+};
+
+const rejectAssignment = async (
+	userId: string,
+	assignmentId: string,
+	rejectedReason: string,
+) => {
+	const resolver = await prisma.resolverProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!resolver) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver profile not found");
+	}
+
+	const assignment = await prisma.assignment.findUnique({
+		where: { id: assignmentId },
+		include: { request: true },
+	});
+
+	if (!assignment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Assignment not found");
+	}
+
+	if (assignment.resolverId !== resolver.id) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"You are not assigned to this request",
+		);
+	}
+
+	if (assignment.status !== AssignmentStatus.PENDING) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			`Assignment cannot be rejected because its status is ${assignment.status}`,
+		);
+	}
+
+	const [updatedAssignment] = await prisma.$transaction([
+		prisma.assignment.update({
+			where: { id: assignment.id },
+			data: {
+				status: AssignmentStatus.REJECTED,
+				rejectedAt: new Date(),
+				rejectedReason,
+			},
+			include: {
+				request: true,
+			},
+		}),
+		prisma.request.update({
+			where: { id: assignment.requestId },
+			data: {
+				status: RequestStatus.SUBMITTED,
+				assignedResolverId: null,
+				rejectReason: rejectedReason,
+			},
+		}),
+		prisma.requestStatusHistory.create({
+			data: {
+				requestId: assignment.requestId,
+				status: RequestStatus.SUBMITTED,
+				previousStatus: assignment.request.status,
+				notes: `Assignment rejected by resolver: ${rejectedReason}`,
+				changedByUserId: userId,
+			},
+		}),
+	]);
+
+	return updatedAssignment;
+};
+
+const updateAssignmentStatus = async (
+	userId: string,
+	assignmentId: string,
+	payload: IUpdateAssignmentStatusPayload,
+) => {
+	const resolver = await prisma.resolverProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!resolver) {
+		throw new AppError(httpStatus.NOT_FOUND, "Resolver profile not found");
+	}
+
+	const assignment = await prisma.assignment.findUnique({
+		where: { id: assignmentId },
+		include: { request: true },
+	});
+
+	if (!assignment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Assignment not found");
+	}
+
+	if (assignment.resolverId !== resolver.id) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"You are not assigned to this request",
+		);
+	}
+
+	let newRequestStatus: RequestStatus = assignment.request.status;
+	const isCompleted = payload.status === AssignmentStatus.COMPLETED;
+
+	if (payload.status === AssignmentStatus.IN_PROGRESS) {
+		newRequestStatus = RequestStatus.IN_PROGRESS;
+	} else if (isCompleted) {
+		newRequestStatus = RequestStatus.RESOLVED;
+	}
+
+	const [updatedAssignment] = await prisma.$transaction([
+		prisma.assignment.update({
+			where: { id: assignment.id },
+			data: {
+				status: payload.status,
+				...(isCompleted && { completedAt: new Date() }),
+			},
+			include: {
+				request: true,
+			},
+		}),
+		prisma.request.update({
+			where: { id: assignment.requestId },
+			data: {
+				status: newRequestStatus,
+				...(isCompleted && { resolvedAt: new Date() }),
+			},
+		}),
+		prisma.requestStatusHistory.create({
+			data: {
+				requestId: assignment.requestId,
+				status: newRequestStatus,
+				previousStatus: assignment.request.status,
+				notes:
+					payload.notes ?? `Assignment status updated to ${payload.status}`,
+				changedByUserId: userId,
+			},
+		}),
+	]);
+
+	return updatedAssignment;
+};
+
 export const resolverService = {
 	applyAsResolver,
 	reviewApplication,
+	getAllApplications,
+	getApplicationById,
+	getMyAssignments,
+	getAssignmentById,
+	acceptAssignment,
+	rejectAssignment,
+	updateAssignmentStatus,
 };
