@@ -27,4 +27,8 @@ const main = async () => {
 	}
 };
 
-main();
+if (process.env.NODE_ENV === "development") {
+	main();
+}
+
+export default app;

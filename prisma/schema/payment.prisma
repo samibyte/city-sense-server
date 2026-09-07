@@ -5,7 +5,7 @@ model Payment {
   transactionId   String
   paidAt          DateTime?
   paymentMethod   PaymentMethod?
-  paymentProvider String? // e.g., "stripe", "razorpay"
+  paymentProvider String? // e.g., "stripe"
   refundedAt      DateTime?
   refundReason    String?
   createdAt       DateTime       @default(now())
