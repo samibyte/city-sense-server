@@ -45,7 +45,6 @@ interface EnvConfig {
 const loadEnvVariables = (): EnvConfig => {
 	const requireEnvVariable = [
 		"NODE_ENV",
-		"PORT",
 		"DATABASE_URL",
 		"FRONTEND_URL",
 		"APP_URL",
