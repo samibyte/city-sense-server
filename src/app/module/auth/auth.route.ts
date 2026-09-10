@@ -52,3 +52,6 @@ authRouter.post(
 	validateRequest(UserValidation.VerifyEmailZodSchema),
 	authController.verifyEmail,
 );
+
+authRouter.post("/login/google", authController.googleLogin);
+

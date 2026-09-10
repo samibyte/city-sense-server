@@ -19,12 +19,15 @@ import { jwtUtils } from "../../utils/jwt.js";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload.js";
 import type {
 	IForgotPasswordPayload,
+	IGoogleLoginPayload,
 	ILoginPayload,
 	IRegisterCitizenPayload,
 	IResetPasswordPayload,
 	ISendEmailVerificationOtpPayload,
 	IVerifyEmailPayload,
 } from "./auth.interface.js";
+import { TokenPayload } from "google-auth-library";
+import { googleClient } from "../../lib/google-client.js";
 
 const EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS = 60 * 10;
 const PASSWORD_RESET_OTP_EXPIRATION_SECONDS = 60 * 15;
@@ -440,6 +443,116 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 	return verifiedUser;
 };
 
+const googleLogin = async (payload: IGoogleLoginPayload) => {
+	let googleIdTokenPayload: TokenPayload | null | undefined = null;
+	try {
+		const ticket = await googleClient.verifyIdToken({
+			idToken: payload.idToken,
+			audience: envVars.GOOGLE_CLIENT_ID,
+		});
+
+		googleIdTokenPayload = ticket.getPayload();
+	} catch (error) {
+		console.log("Google ID Token verification failed", error);
+		throw new Error("Invalid or expired google Id Token");
+	}
+
+	if (!googleIdTokenPayload) {
+		throw new Error("Invalid or expired google Id Token");
+	}
+
+	if (!googleIdTokenPayload.name) {
+		throw new Error("Google account name not found");
+	}
+	if (!googleIdTokenPayload.email) {
+		throw new Error("Google account email not found");
+	}
+
+	const citizenExistWithGoogleAuth = await prisma.user.findUnique({
+		where: {
+			email: googleIdTokenPayload.email,
+			role: Role.CITIZEN,
+			googleId: googleIdTokenPayload.sub,
+		},
+	});
+
+	let user = citizenExistWithGoogleAuth;
+
+	if (!citizenExistWithGoogleAuth) {
+		const citizenExistWithCredentials = await prisma.user.findUnique({
+			where: {
+				email: googleIdTokenPayload.email,
+				role: Role.CITIZEN,
+				authProvider: AuthProvider.CREDENTIAL,
+			},
+		});
+
+		if (citizenExistWithCredentials) {
+			if (!citizenExistWithCredentials.emailVerified) {
+				throw new Error("Email Not Verified");
+			}
+
+			if (citizenExistWithCredentials.status === UserStatus.BANNED) {
+				throw new Error("User Is Blocked");
+			}
+
+			if (
+				citizenExistWithCredentials.isDeleted ||
+				citizenExistWithCredentials.status === UserStatus.DELETED
+			) {
+				throw new Error("User Is Deleted");
+			}
+
+			user = await prisma.user.update({
+				where: {
+					id: citizenExistWithCredentials.id,
+				},
+				data: {
+					googleId: googleIdTokenPayload.sub,
+				},
+			});
+		} else {
+			user = await prisma.user.create({
+				data: {
+					name: googleIdTokenPayload.name,
+					profileUrl: googleIdTokenPayload.picture,
+					emailVerified: true,
+					email: googleIdTokenPayload.email,
+					googleId: googleIdTokenPayload.sub,
+					authProvider: AuthProvider.GOOGLE,
+					role: Role.CITIZEN,
+					citizen: {},
+				},
+			});
+		}
+	}
+
+	if (!user) {
+		throw new Error("User Not Found");
+	}
+
+	if (user.status === UserStatus.BANNED) {
+		throw new Error("User Is Blocked");
+	}
+
+	if (user.isDeleted || user.status === UserStatus.DELETED) {
+		throw new Error("User Is Deleted");
+	}
+
+	const jwtPayload = {
+		userId: googleIdTokenPayload.sub,
+		name: googleIdTokenPayload.name,
+		email: googleIdTokenPayload.email,
+		role: Role.CITIZEN,
+	};
+
+	const authTokens = generateAuthTokens(jwtPayload);
+
+	return {
+		...authTokens,
+	};
+};
+
 export const authService = {
 	loginUser,
 	registerCitizen,
@@ -449,4 +562,5 @@ export const authService = {
 	forgotPassword,
 	resetPassword,
 	verifyEmail,
+	googleLogin,
 };

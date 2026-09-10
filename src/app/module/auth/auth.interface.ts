@@ -30,3 +30,7 @@ export interface IResetPasswordPayload {
 	newPassword: string;
 	confirmPassword: string;
 }
+
+export interface IGoogleLoginPayload {
+	idToken: string;
+}
