@@ -21,6 +21,7 @@ interface EnvConfig {
 		SMTP_USER: string;
 		SMTP_PASS: string;
 		SMTP_FROM: string;
+		SMTP_SECURE: string;
 	};
 	REDIS: {
 		USER: string;
@@ -60,6 +61,7 @@ const loadEnvVariables = (): EnvConfig => {
 		"EMAIL_SENDER_SMTP_USER",
 		"EMAIL_SENDER_SMTP_PASS",
 		"EMAIL_SENDER_SMTP_FROM",
+		"EMAIL_SENDER_SMTP_SECURE",
 		"GOOGLE_CLIENT_ID",
 		"GOOGLE_CLIENT_SECRET",
 		"GOOGLE_CALLBACK_URL",
@@ -101,6 +103,7 @@ const loadEnvVariables = (): EnvConfig => {
 			SMTP_USER: process.env.EMAIL_SENDER_SMTP_USER as string,
 			SMTP_PASS: process.env.EMAIL_SENDER_SMTP_PASS as string,
 			SMTP_FROM: process.env.EMAIL_SENDER_SMTP_FROM as string,
+			SMTP_SECURE: process.env.EMAIL_SENDER_SMTP_SECURE as string,
 		},
 		GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
 		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,

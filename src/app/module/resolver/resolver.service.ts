@@ -184,12 +184,19 @@ const applyAsResolver = async (
 
 	const html = await ejs.renderFile(templatePath, templateData);
 
-	await transporter.sendMail({
-		from: envVars.EMAIL_SENDER.SMTP_FROM,
-		to: payload.user.email,
-		subject: "Your Resolver Application Is Under Review",
-		html,
-	});
+	try {
+		await transporter.sendMail({
+			from: envVars.EMAIL_SENDER.SMTP_FROM,
+			to: payload.user.email,
+			subject: "Your Resolver Application Is Under Review",
+			html,
+		});
+	} catch (error) {
+		console.error(
+			"Failed to send resolver application confirmation email:",
+			error,
+		);
+	}
 
 	return resolverApplication;
 };
@@ -278,12 +285,16 @@ const reviewApplication = async (
 			year: new Date().getFullYear(),
 		});
 
-		await transporter.sendMail({
-			from: envVars.EMAIL_SENDER.SMTP_FROM,
-			to: resolverApplication.user.email,
-			subject: "Your Resolver Application Has Been Approved",
-			html,
-		});
+		try {
+			await transporter.sendMail({
+				from: envVars.EMAIL_SENDER.SMTP_FROM,
+				to: resolverApplication.user.email,
+				subject: "Your Resolver Application Has Been Approved",
+				html,
+			});
+		} catch (error) {
+			console.error("Failed to send resolver approval email:", error);
+		}
 
 		return { ...updatedApplication, email: resolverApplication.user.email };
 	}
@@ -322,12 +333,16 @@ const reviewApplication = async (
 		year: new Date().getFullYear(),
 	});
 
-	await transporter.sendMail({
-		from: envVars.EMAIL_SENDER.SMTP_FROM,
-		to: resolverApplication.user.email,
-		subject: "Update on Your Resolver Application",
-		html,
-	});
+	try {
+		await transporter.sendMail({
+			from: envVars.EMAIL_SENDER.SMTP_FROM,
+			to: resolverApplication.user.email,
+			subject: "Update on Your Resolver Application",
+			html,
+		});
+	} catch (error) {
+		console.error("Failed to send resolver rejection email:", error);
+	}
 
 	return { ...updatedApplication, email: resolverApplication.user.email };
 };

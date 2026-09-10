@@ -1,0 +1,1392 @@
+{
+	"info": {
+		"_postman_id": "5a00a419-7ca7-4a36-b875-481b368692cb",
+		"name": "City Sense",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49609884",
+		"_collection_link": "https://samibyte-3306004.postman.co/workspace/samibyteZone~3f81ac94-89a8-4f6c-8491-506852ef3e39/collection/49609884-5a00a419-7ca7-4a36-b875-481b368692cb?action=share&source=collection_link&creator=49609884"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register Citizen",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"sami1\",\r\n    \"email\": \"adnanss.akanda@gmaill.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User [Citizen]",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User [Resolver]",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"tanvir.ahmed@example.com\",\r\n    \"password\": \"docPass1002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Verification OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/send-verification-otp",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"send-verification-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\",\r\n    \"otp\" : \"096816\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-email",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"verify-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgot-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\",\r\n    \"otp\" : \"296406\",\r\n    \"newPassword\" : \"!Password1234\",\r\n    \"confirmPassword\" : \"!Password1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Google Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/login/google",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login",
+								"google"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Department",
+			"item": [
+				{
+					"name": "Get All Departments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/departments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/departments/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "department_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Department",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Public Works\",\r\n    \"description\": \"Handles infrastructure and public utility issues\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/departments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Department",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Public Works & Sanitation\",\r\n    \"description\": \"Handles infrastructure, sanitation, and public utility issues\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/departments/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "department_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Department",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/departments/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "department_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service",
+			"item": [
+				{
+					"name": "Get All Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "searchTerm",
+									"value": "garbage",
+									"disabled": true
+								},
+								{
+									"key": "serviceType",
+									"value": "FREE",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "service_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Garbage Pickup Request\",\r\n    \"description\": \"Request scheduled garbage pickup service for your area\",\r\n    \"price\": 0,\r\n    \"estimatedDuration\": 24,\r\n    \"serviceType\": \"FREE\",\r\n    \"departmentId\": \"department_id_here\",\r\n    \"categoryId\": \"category_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Garbage Pickup Service\",\r\n    \"description\": \"Request scheduled garbage pickup service for your locality\",\r\n    \"price\": 0,\r\n    \"estimatedDuration\": 12,\r\n    \"serviceType\": \"FREE\",\r\n    \"departmentId\": \"department_id_here\",\r\n    \"categoryId\": \"category_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "service_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "service_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Service Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service Category By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services/categories/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "category_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sanitation\",\r\n    \"description\": \"Waste management and sanitation services\",\r\n    \"departmentId\": \"department_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service Category",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sanitation & Waste Management\",\r\n    \"description\": \"Waste management, recycling, and sanitation services\",\r\n    \"departmentId\": \"department_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services/categories/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "category_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/services/categories/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "category_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resolver",
+			"item": [
+				{
+					"name": "Apply as Resolver",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"type": "text",
+									"value": "{\n    \"user\": {\n        \"name\": \"New Resolver\",\n        \"email\": \"resolver.applicant@example.com\",\n        \"phone\": \"+8801700000000\",\n        \"address\": \"Dhaka, Bangladesh\"\n    },\n    \"resolver\": {\n        \"bio\": \"Experienced professional with 10 years of expertise in public works.\",\n        \"departmentId\": \"department_id_here\"\n    }\n}"
+								},
+								{
+									"key": "resume",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "additionalFiles",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resolver/apply-as-resolver",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"apply-as-resolver"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Applications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resolver/applications?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"applications"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "searchTerm",
+									"value": "tanvir",
+									"disabled": true
+								},
+								{
+									"key": "verificationStatus",
+									"value": "PENDING",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Application By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resolver/applications/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"applications",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "resolver_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review Application [Approve]",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resolverId\": \"resolver_id_here\",\r\n    \"verificationStatus\": \"APPROVED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resolver/application-review",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"application-review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review Application [Reject]",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resolverId\": \"resolver_id_here\",\r\n    \"verificationStatus\": \"REJECTED\",\r\n    \"rejectionReason\": \"Insufficient documentation provided for review\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resolver/application-review",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"application-review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Assignments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resolver/assignments?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "PENDING",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resolver/assignments/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"assignments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "assignment_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Assignment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resolver/assignments/:id/accept",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"assignments",
+								":id",
+								"accept"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "assignment_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Assignment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rejectedReason\": \"Currently overloaded with other assignments\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resolver/assignments/:id/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"assignments",
+								":id",
+								"reject"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "assignment_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignment Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"IN_PROGRESS\",\r\n    \"notes\": \"Started working on the issue at the reported location\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resolver/assignments/:id/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resolver",
+								"assignments",
+								":id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "assignment_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Request",
+			"item": [
+				{
+					"name": "Create Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"type": "text",
+									"value": "{\n    \"type\": \"COMPLAINT\",\n    \"title\": \"Broken streetlight on Main Road\",\n    \"description\": \"The streetlight near house #12 on Main Road has been broken for two weeks, please fix it.\",\n    \"categoryId\": \"category_id_here\",\n    \"serviceId\": \"service_id_here\",\n    \"priority\": \"MEDIUM\",\n    \"location\": {\n        \"address\": \"House #12, Main Road, Banani\",\n        \"latitude\": \"23.7937\",\n        \"longitude\": \"90.4066\",\n        \"area\": \"Banani\",\n        \"city\": \"Dhaka\"\n    }\n}"
+								},
+								{
+									"key": "attachments",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "attachments",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/requests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requests/my-requests?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests",
+								"my-requests"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "PENDING",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "COMPLAINT",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Request By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requests/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Request",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requests/:id/cancel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests",
+								":id",
+								"cancel"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Give Feedback",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 5,\r\n    \"comment\": \"The resolver responded quickly and resolved my issue professionally.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/requests/:id/feedback",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests",
+								":id",
+								"feedback"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/requests?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"requests"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "SUBMITTED",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "COMPLAINT",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"requestId\": \"request_id_here\",\r\n    \"resolverId\": \"resolver_id_here\",\r\n    \"priority\": \"HIGH\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/requests/assign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"requests",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reassign Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"requestId\": \"request_id_here\",\r\n    \"newResolverId\": \"resolver_id_here\",\r\n    \"priority\": \"MEDIUM\",\r\n    \"reason\": \"Previous resolver had too many pending assignments\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/requests/reassign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"requests",
+								"reassign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Request Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"IN_PROGRESS\",\r\n    \"notes\": \"Admin escalated the request to high priority\",\r\n    \"slaDeadline\": \"2025-10-01T00:00:00.000Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/requests/:id/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"requests",
+								":id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/users?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "searchTerm",
+									"value": "sami",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "CITIZEN",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"BANNED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/:id/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								":id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

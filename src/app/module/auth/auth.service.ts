@@ -13,7 +13,7 @@ import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/AppError.js";
 import { transporter } from "../../lib/lib.js";
 import { prisma } from "../../lib/prisma.js";
-import { redisClient } from "../../lib/redis-client.js";
+import { redisDel, redisGet, redisSet } from "../../lib/redis-client.js";
 import { generateAuthTokens } from "../../utils/auth-token.js";
 import { jwtUtils } from "../../utils/jwt.js";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload.js";
@@ -36,7 +36,7 @@ const sendEmailVerificationOtpMail = async (user: {
 	const otpValue = crypto.randomInt(100000, 1000000).toString();
 	const otpKey = `citizen-email-verification-otp:${user.email}`;
 
-	await redisClient.set(otpKey, otpValue, {
+	await redisSet(otpKey, otpValue, {
 		expiration: {
 			type: "EX",
 			value: EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS,
@@ -148,11 +148,14 @@ const registerCitizen = async (
 	};
 
 	const createdUser = await prisma.user.createCitizenWithCreds(userData);
-	console.log(createdUser);
 
 	const { citizen, ...user } = createdUser;
 
-	await sendEmailVerificationOtpMail(user);
+	try {
+		await sendEmailVerificationOtpMail(user);
+	} catch (error) {
+		console.error("Failed to send email verification OTP:", error);
+	}
 
 	const jwtPayload = {
 		userId: user.id,
@@ -210,7 +213,7 @@ const forgotPassword = async (payload: IForgotPasswordPayload) => {
 	const otpValue = crypto.randomInt(100000, 1000000).toString();
 	const otpKey = `password-reset-otp:${email}`;
 
-	await redisClient.set(otpKey, otpValue, {
+	await redisSet(otpKey, otpValue, {
 		expiration: {
 			type: "EX",
 			value: PASSWORD_RESET_OTP_EXPIRATION_SECONDS,
@@ -232,12 +235,16 @@ const forgotPassword = async (payload: IForgotPasswordPayload) => {
 
 	const html = await ejs.renderFile(templatePath, templateData);
 
-	await transporter.sendMail({
-		from: envVars.EMAIL_SENDER.SMTP_FROM,
-		to: user.email,
-		subject: "Password Reset OTP",
-		html,
-	});
+	try {
+		await transporter.sendMail({
+			from: envVars.EMAIL_SENDER.SMTP_FROM,
+			to: user.email,
+			subject: "Password Reset OTP",
+			html,
+		});
+	} catch (error) {
+		console.error("Failed to send password reset OTP email:", error);
+	}
 
 	return {
 		email,
@@ -263,7 +270,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 	}
 
 	const otpKey = `password-reset-otp:${email}`;
-	const storedOtp = await redisClient.get(otpKey);
+	const storedOtp = await redisGet(otpKey);
 
 	if (!storedOtp || storedOtp !== otp) {
 		throw new AppError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
@@ -283,7 +290,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 		omit: { passwordHash: true },
 	});
 
-	await redisClient.del(otpKey);
+	await redisDel(otpKey);
 
 	const templatePath = path.join(
 		process.cwd(),
@@ -299,12 +306,16 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 
 	const html = await ejs.renderFile(templatePath, templateData);
 
-	await transporter.sendMail({
-		from: envVars.EMAIL_SENDER.SMTP_FROM,
-		to: updatedUser.email,
-		subject: "Your Password Has Been Changed",
-		html,
-	});
+	try {
+		await transporter.sendMail({
+			from: envVars.EMAIL_SENDER.SMTP_FROM,
+			to: updatedUser.email,
+			subject: "Your Password Has Been Changed",
+			html,
+		});
+	} catch (error) {
+		console.error("Failed to send password change confirmation email:", error);
+	}
 
 	return updatedUser;
 };
@@ -387,7 +398,7 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 	}
 
 	const otpKey = `citizen-email-verification-otp:${normalizedEmail}`;
-	const storedOtp = await redisClient.get(otpKey);
+	const storedOtp = await redisGet(otpKey);
 
 	if (!storedOtp || storedOtp !== otp) {
 		throw new AppError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
@@ -399,7 +410,7 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 		omit: { passwordHash: true },
 	});
 
-	await redisClient.del(otpKey);
+	await redisDel(otpKey);
 
 	const templatePath = path.join(
 		process.cwd(),
@@ -415,12 +426,16 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 
 	const html = await ejs.renderFile(templatePath, templateData);
 
-	await transporter.sendMail({
-		from: envVars.EMAIL_SENDER.SMTP_FROM,
-		to: user.email,
-		subject: "Your Email Has Been Verified",
-		html,
-	});
+	try {
+		await transporter.sendMail({
+			from: envVars.EMAIL_SENDER.SMTP_FROM,
+			to: user.email,
+			subject: "Your Email Has Been Verified",
+			html,
+		});
+	} catch (error) {
+		console.error("Failed to send email verified notification:", error);
+	}
 
 	return verifiedUser;
 };
