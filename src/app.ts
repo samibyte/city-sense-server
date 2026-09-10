@@ -15,6 +15,7 @@ import { departmentRouter } from "./app/module/department/department.route.js";
 import { requestRouter } from "./app/module/request/request.route.js";
 import { resolverRouter } from "./app/module/resolver/resolver.route.js";
 import { serviceRouter } from "./app/module/service/service.route.js";
+import { userRouter } from "./app/module/user/user.route.js";
 
 const app: Application = express();
 
@@ -38,6 +39,7 @@ app.use("/api/v1/resolver", resolverRouter);
 app.use("/api/v1/services", serviceRouter);
 app.use("/api/v1/requests", requestRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/users", userRouter);
 
 // Basic route
 app.get("/", async (_req: Request, res: Response) => {
