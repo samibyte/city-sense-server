@@ -89,6 +89,18 @@ const getDashboardStats = catchAsync(async (_req: Request, res: Response) => {
 	});
 });
 
+const getAvailableResolvers = catchAsync(
+	async (req: Request, res: Response) => {
+		const result = await adminService.getAvailableResolvers(req.query);
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			message: "Available resolvers retrieved successfully",
+			data: result.resolvers,
+			meta: result.meta,
+		});
+	},
+);
+
 export const adminController = {
 	getAllRequests,
 	assignRequest,
@@ -97,4 +109,5 @@ export const adminController = {
 	getAllUsers,
 	updateUserStatus,
 	getDashboardStats,
+	getAvailableResolvers,
 };

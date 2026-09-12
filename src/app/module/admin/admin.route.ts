@@ -13,6 +13,8 @@ adminRouter.get("/stats", adminController.getDashboardStats);
 
 adminRouter.get("/requests", adminController.getAllRequests);
 
+adminRouter.get("/resolvers/available", adminController.getAvailableResolvers);
+
 adminRouter.post(
 	"/requests/assign",
 	validateRequest(AdminValidation.AssignRequestZodSchema),

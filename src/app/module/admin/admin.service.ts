@@ -16,6 +16,13 @@ import type {
 	IUpdateRequestStatusAdminPayload,
 } from "./admin.interface.js";
 
+interface IGetAvailableResolversQuery {
+	departmentId?: string;
+	city?: string;
+	page?: string;
+	limit?: string;
+}
+
 const getAllRequests = async (query: IGetRequestsAdminQuery) => {
 	const page = Number(query.page) || 1;
 	const limit = Number(query.limit) || 10;
@@ -486,6 +493,80 @@ const getDashboardStats = async () => {
 	};
 };
 
+const getAvailableResolvers = async (query: IGetAvailableResolversQuery) => {
+	const page = Number(query.page) || 1;
+	const limit = Number(query.limit) || 10;
+	const skip = (page - 1) * limit;
+
+	const where: Record<string, unknown> = {
+		verificationStatus: ResolverVerificationStatus.APPROVED,
+		isDeleted: false,
+	};
+
+	if (query.departmentId) {
+		where.departmentId = query.departmentId;
+	}
+
+	if (query.city) {
+		where.city = query.city;
+	}
+
+	const [resolvers, total] = await Promise.all([
+		prisma.resolverProfile.findMany({
+			where,
+			skip,
+			take: limit,
+			orderBy: { createdAt: "desc" },
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						phone: true,
+					},
+				},
+				department: true,
+				assignments: {
+					where: {
+						status: {
+							in: [
+								AssignmentStatus.PENDING,
+								AssignmentStatus.ACCEPTED,
+								AssignmentStatus.IN_PROGRESS,
+							],
+						},
+					},
+					select: { id: true },
+				},
+			},
+		}),
+		prisma.resolverProfile.count({ where }),
+	]);
+
+	const result = resolvers.map((resolver) => ({
+		id: resolver.id,
+		city: resolver.city,
+		area: resolver.area,
+		maxConcurrentAssignments: resolver.maxConcurrentAssignments,
+		activeAssignments: resolver.assignments.length,
+		isAvailable:
+			resolver.assignments.length < resolver.maxConcurrentAssignments,
+		user: resolver.user,
+		department: resolver.department,
+	}));
+
+	return {
+		resolvers: result,
+		meta: {
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		},
+	};
+};
+
 export const adminService = {
 	getAllRequests,
 	assignRequest,
@@ -494,4 +575,5 @@ export const adminService = {
 	getAllUsers,
 	updateUserStatus,
 	getDashboardStats,
+	getAvailableResolvers,
 };
