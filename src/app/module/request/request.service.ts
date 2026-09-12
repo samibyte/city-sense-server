@@ -3,8 +3,10 @@ import httpStatus from "http-status";
 import {
 	PaymentStatus,
 	RequestStatus,
+	RequestType,
 	Role,
 } from "../../../generated/prisma/enums.js";
+import type { Service } from "../../../generated/prisma/client.js";
 import AppError from "../../errorHelpers/AppError.js";
 import { prisma } from "../../lib/prisma.js";
 import { stripe } from "../../lib/stripe.js";
@@ -29,25 +31,52 @@ const createRequest = async (
 		throw new AppError(httpStatus.NOT_FOUND, "Citizen profile not found");
 	}
 
-	const category = await prisma.serviceCategory.findUnique({
-		where: { id: payload.categoryId },
-	});
-
-	if (!category || category.isDeleted) {
-		throw new AppError(httpStatus.NOT_FOUND, "Service category not found");
-	}
-
-	let service: { isPaid: boolean; isDeleted: boolean } | null = null;
-	if (payload.serviceId) {
-		service = await prisma.service.findUnique({
-			where: { id: payload.serviceId },
+	if (payload.type === RequestType.COMPLAINT) {
+		const category = await prisma.serviceCategory.findUnique({
+			where: { id: payload.categoryId },
 		});
-		if (!service || service.isDeleted) {
-			throw new AppError(httpStatus.NOT_FOUND, "Service not found");
+
+		if (!category || category.isDeleted) {
+			throw new AppError(httpStatus.NOT_FOUND, "Service category not found");
 		}
 	}
 
+	let service: Service | null = null;
+
+	if (payload.type === RequestType.SERVICE_REQUEST) {
+		service = await prisma.service.findUnique({
+			where: { id: payload.serviceId },
+		});
+	} else if (payload.serviceId) {
+		service = await prisma.service.findUnique({
+			where: { id: payload.serviceId },
+		});
+	}
+
+	if (service?.isDeleted) {
+		throw new AppError(httpStatus.NOT_FOUND, "Service not found");
+	}
+
+	if (payload.type === RequestType.SERVICE_REQUEST && !service) {
+		throw new AppError(httpStatus.NOT_FOUND, "Service not found");
+	}
+
 	const isPaidRequest = service?.isPaid ?? false;
+
+	const requestTitle =
+		payload.type === RequestType.COMPLAINT
+			? payload.title
+			: (service?.name ?? "");
+
+	const requestDescription =
+		payload.type === RequestType.COMPLAINT
+			? payload.description
+			: (service?.description ?? "");
+
+	const categoryId =
+		payload.type === RequestType.COMPLAINT
+			? payload.categoryId
+			: (service?.categoryId ?? "");
 
 	let attachments: Array<{ url: string; publicId: string }> = [];
 	if (files && files.length > 0) {
@@ -76,12 +105,12 @@ const createRequest = async (
 		data: {
 			requestNumber,
 			type: payload.type,
-			title: payload.title,
-			description: payload.description,
+			title: requestTitle,
+			description: requestDescription,
 			requestAttachment: attachments.length > 0 ? attachments : undefined,
 			status: initialStatus,
 			citizenId: citizen.id,
-			categoryId: payload.categoryId,
+			categoryId,
 			serviceId: payload.serviceId,
 			locationId: location.id,
 			statusHistory: {

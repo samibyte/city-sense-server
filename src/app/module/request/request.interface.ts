@@ -4,20 +4,32 @@ import type {
 	RequestType,
 } from "../../../generated/prisma/enums.js";
 
-export interface ICreateRequestPayload {
-	type: RequestType;
+interface IBaseLocation {
+	address: string;
+	latitude?: string;
+	longitude?: string;
+	area: string;
+	city: string;
+}
+
+export interface IComplaintRequestPayload {
+	type: "COMPLAINT";
 	title: string;
 	description: string;
 	categoryId: string;
 	serviceId?: string;
-	location: {
-		address: string;
-		latitude?: string;
-		longitude?: string;
-		area: string;
-		city: string;
-	};
+	location: IBaseLocation;
 }
+
+export interface IServiceRequestPayload {
+	type: "SERVICE_REQUEST";
+	serviceId: string;
+	location: IBaseLocation;
+}
+
+export type ICreateRequestPayload =
+	| IComplaintRequestPayload
+	| IServiceRequestPayload;
 
 export interface IGetMyRequestsQuery {
 	page?: number;
