@@ -16,6 +16,7 @@ import AppError from "../../errorHelpers/AppError.js";
 import { cloudinary } from "../../lib/cloudinary.js";
 import { transporter } from "../../lib/lib.js";
 import { prisma } from "../../lib/prisma.js";
+import { assignmentService } from "../assignment/assignment.service.js";
 import type {
 	IApplyAsResolverPayload,
 	IGetApplicationsQuery,
@@ -684,6 +685,51 @@ const rejectAssignment = async (
 			},
 		}),
 	]);
+
+	const request = await prisma.request.findUnique({
+		where: { id: assignment.requestId },
+		include: {
+			citizen: {
+				include: {
+					user: {
+						select: { id: true, name: true, email: true },
+					},
+				},
+			},
+		},
+	});
+
+	if (request?.citizen?.user) {
+		const templatePath = path.join(
+			process.cwd(),
+			"src/app/templates/citizen-request-reassigned.ejs",
+		);
+
+		const html = await ejs.renderFile(templatePath, {
+			name: request.citizen.user.name,
+			requestNumber: request.requestNumber,
+			requestTitle: request.title,
+			year: new Date().getFullYear(),
+		});
+
+		try {
+			await transporter.sendMail({
+				from: envVars.EMAIL_SENDER.SMTP_FROM,
+				to: request.citizen.user.email,
+				subject: `Your Request is Being Reassigned: ${request.requestNumber}`,
+				html,
+			});
+		} catch (error) {
+			console.error("Failed to send citizen reassignment email:", error);
+		}
+	}
+
+	assignmentService.assignNextResolver(assignment.requestId).catch((error) => {
+		console.error(
+			`Auto-reassignment failed for request ${assignment.requestId}:`,
+			error,
+		);
+	});
 
 	return updatedAssignment;
 };

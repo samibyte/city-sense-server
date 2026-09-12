@@ -20,6 +20,8 @@ export const ApplyAsResolverZodSchema = z.object({
 			.max(1000, "Bio cannot exceed 1000 characters")
 			.optional(),
 		departmentId: z.string("Please provide departmentId"),
+		city: z.string().trim().min(2, "City is required"),
+		area: z.string().trim().optional(),
 	}),
 });
 

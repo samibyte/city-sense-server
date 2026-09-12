@@ -15,6 +15,8 @@ export interface IApplyAsResolverPayload {
 	resolver: {
 		bio?: string;
 		departmentId: string;
+		city: string;
+		area?: string;
 	};
 }
 

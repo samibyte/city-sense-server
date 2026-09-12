@@ -85,10 +85,6 @@ const getAllServices = async (query: IGetServicesQuery) => {
 			skip,
 			take: limit,
 			orderBy: { name: "asc" },
-			include: {
-				department: true,
-				category: true,
-			},
 		}),
 		prisma.service.count({ where }),
 	]);
@@ -203,7 +199,9 @@ const createCategory = async (payload: ICreateServiceCategoryPayload) => {
 };
 
 const getAllCategories = async (query: IGetCategoriesQuery) => {
-	const where: Record<string, unknown> = {};
+	const where: Record<string, unknown> = {
+		isDeleted: false,
+	};
 
 	if (query.departmentId) {
 		where.departmentId = query.departmentId;
@@ -219,13 +217,6 @@ const getAllCategories = async (query: IGetCategoriesQuery) => {
 	return prisma.serviceCategory.findMany({
 		where,
 		orderBy: { name: "asc" },
-		include: {
-			department: true,
-			services: {
-				where: { isDeleted: false },
-				orderBy: { name: "asc" },
-			},
-		},
 	});
 };
 
@@ -241,7 +232,7 @@ const getCategoryById = async (id: string) => {
 		},
 	});
 
-	if (!category) {
+	if (!category || category.isDeleted) {
 		throw new AppError(httpStatus.NOT_FOUND, "Service category not found");
 	}
 
@@ -288,7 +279,7 @@ const deleteCategory = async (id: string) => {
 		},
 	});
 
-	if (!category) {
+	if (!category || category.isDeleted) {
 		throw new AppError(httpStatus.NOT_FOUND, "Service category not found");
 	}
 
@@ -299,8 +290,12 @@ const deleteCategory = async (id: string) => {
 		);
 	}
 
-	return prisma.serviceCategory.delete({
+	return prisma.serviceCategory.update({
 		where: { id },
+		data: {
+			isDeleted: true,
+			deletedAt: new Date(),
+		},
 	});
 };
 
