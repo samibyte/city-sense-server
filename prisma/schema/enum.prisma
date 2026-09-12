@@ -27,6 +27,7 @@ enum RequestType {
 }
 
 enum RequestStatus {
+  PENDING
   SUBMITTED
   ASSIGNED
   ACCEPTED

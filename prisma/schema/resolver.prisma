@@ -6,6 +6,13 @@ model ResolverProfile {
   resumePublicId  String?
   additionalFiles Json? // Array of file URLs or file metadata // Stores: [{ url: "...", publicId: "..." }]
 
+  // Location for auto-assignment matching
+  city  String
+  area  String?
+
+  // Workload management
+  maxConcurrentAssignments Int @default(5)
+
   verificationStatus ResolverVerificationStatus @default(PENDING)
   rejectionReason    String?
   reviewedBy         String?

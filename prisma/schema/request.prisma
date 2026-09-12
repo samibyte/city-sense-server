@@ -19,6 +19,10 @@ model Request {
   assignedAt         DateTime?
   rejectReason       String?
 
+  // Auto-assignment tracking
+  rejectionCount Int  @default(0)
+  autoAssigned   Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

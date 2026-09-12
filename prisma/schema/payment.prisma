@@ -2,14 +2,19 @@ model Payment {
   id              String         @id @default(uuid())
   amount          Decimal
   status          PaymentStatus  @default(PENDING)
-  transactionId   String
+  transactionId   String?
   paidAt          DateTime?
   paymentMethod   PaymentMethod?
   paymentProvider String? // e.g., "stripe"
   refundedAt      DateTime?
   refundReason    String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+
+  // Stripe Checkout tracking
+  stripeEventId      String? @unique
+  paymentGatewayData Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   requestId String?         @unique
@@ -21,5 +26,6 @@ model Payment {
 
   @@index([citizenId], name: "idx_payment_citizen")
   @@index([status], name: "idx_payment_status")
+  @@index([transactionId], name: "idx_payment_transaction")
   @@map("payments")
 }
