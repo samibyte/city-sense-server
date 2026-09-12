@@ -2,19 +2,10 @@ import httpStatus from "http-status";
 import AppError from "../../errorHelpers/AppError.js";
 import { prisma } from "../../lib/prisma.js";
 
-const getAllDepartment = async (includeRelations = false) => {
+const getAllDepartment = async () => {
 	const departments = await prisma.department.findMany({
+		where: { isDeleted: false },
 		orderBy: { name: "asc" },
-		...(includeRelations && {
-			include: {
-				categories: { orderBy: { name: "asc" } },
-				services: {
-					where: { isDeleted: false },
-					orderBy: { name: "asc" },
-					include: { category: true },
-				},
-			},
-		}),
 	});
 
 	return departments;
@@ -24,7 +15,10 @@ const getDepartmentById = async (id: string) => {
 	const department = await prisma.department.findUnique({
 		where: { id },
 		include: {
-			categories: { orderBy: { name: "asc" } },
+			categories: {
+				where: { isDeleted: false },
+				orderBy: { name: "asc" },
+			},
 			services: {
 				where: { isDeleted: false },
 				orderBy: { name: "asc" },
@@ -33,7 +27,7 @@ const getDepartmentById = async (id: string) => {
 		},
 	});
 
-	if (!department) {
+	if (!department || department.isDeleted) {
 		throw new AppError(httpStatus.NOT_FOUND, "Department not found");
 	}
 
@@ -70,6 +64,10 @@ const deleteDepartment = async (id: string) => {
 		throw new AppError(httpStatus.NOT_FOUND, "Department not found");
 	}
 
+	if (existing.isDeleted) {
+		throw new AppError(httpStatus.NOT_FOUND, "Department not found");
+	}
+
 	if (existing.services.length > 0) {
 		throw new AppError(
 			httpStatus.BAD_REQUEST,
@@ -77,7 +75,13 @@ const deleteDepartment = async (id: string) => {
 		);
 	}
 
-	return prisma.department.delete({ where: { id } });
+	return prisma.department.update({
+		where: { id },
+		data: {
+			isDeleted: true,
+			deletedAt: new Date(),
+		},
+	});
 };
 
 export const departmentService = {

@@ -4,9 +4,8 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { departmentService } from "./department.service.js";
 
-const getAllDepartment = catchAsync(async (req: Request, res: Response) => {
-	const includeRelations = req.query.includeRelations !== "false";
-	const result = await departmentService.getAllDepartment(includeRelations);
+const getAllDepartment = catchAsync(async (_req: Request, res: Response) => {
+	const result = await departmentService.getAllDepartment();
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		message: "Departments retrieved successfully",

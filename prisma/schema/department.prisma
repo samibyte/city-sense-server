@@ -2,10 +2,18 @@ model Department {
   id          String            @id @default(uuid())
   name        String
   description String
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   resolvers   ResolverProfile[]
   services    Service[]
   categories  ServiceCategory[]
 
   @@index([name], name: "idx_department_name")
+  @@index([isDeleted], name: "idx_department_isDeleted")
   @@map("departments")
 }

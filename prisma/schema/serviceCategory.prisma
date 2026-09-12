@@ -3,6 +3,12 @@ model ServiceCategory {
   name        String
   description String
 
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   departmentId String
   department   Department @relation(fields: [departmentId], references: [id])
   services     Service[]
@@ -10,5 +16,6 @@ model ServiceCategory {
 
   @@index([departmentId], name: "idx_service_category_department")
   @@index([name], name: "idx_service_category_name")
+  @@index([isDeleted], name: "idx_service_category_isDeleted")
   @@map("service_categories")
 }
