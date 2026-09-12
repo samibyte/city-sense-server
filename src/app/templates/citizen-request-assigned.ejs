@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Resolver Assigned to Your Request</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #333;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .highlight {
+        color: #1d4ed8;
+        font-weight: bold;
+      }
+      .request-details {
+        margin: 20px 0;
+        padding: 16px;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+      }
+      .request-details p {
+        margin: 8px 0;
+        word-break: break-all;
+      }
+      .request-details strong {
+        color: #0369a1;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Resolver Assigned to Your Request</h2>
+      <p>Hello <%= name %>,</p>
+      <p>
+        Great news! A resolver has been assigned to your request and will be
+        working on it shortly.
+      </p>
+      <div class="request-details">
+        <p><strong>Request Number:</strong> <%= requestNumber %></p>
+        <p><strong>Title:</strong> <%= requestTitle %></p>
+        <p><strong>Assigned Resolver:</strong> <%= resolverName %></p>
+      </div>
+      <p>
+        You can track the progress of your request from your dashboard. The
+        resolver will update the status as they work on it.
+      </p>
+      <p>
+        Best regards,<br />
+        <span class="highlight">City Sense Team</span>
+      </p>
+      <div class="footer">
+        &copy; <%= year %> City Sense. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

@@ -10,6 +10,7 @@ const createRedisClient = () => {
 			port: Number(envVars.REDIS.PORT),
 			reconnectStrategy: (retries) => Math.min(retries * 100, 2000),
 		},
+		pingInterval: 30_000,
 	});
 
 	client.on("error", (error) => {
@@ -45,6 +46,7 @@ export const ensureRedisConnection = async () => {
 const isClosedClientError = (error: unknown) =>
 	error instanceof Error &&
 	(error.name === "ClientClosedError" ||
+		error.name === "SocketClosedUnexpectedlyError" ||
 		error.message.toLowerCase().includes("client is closed"));
 
 const resetRedisClient = () => {

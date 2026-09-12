@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Assignment Request</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #333;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .highlight {
+        color: #1d4ed8;
+        font-weight: bold;
+      }
+      .request-details {
+        margin: 20px 0;
+        padding: 16px;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+      }
+      .request-details p {
+        margin: 8px 0;
+        word-break: break-all;
+      }
+      .request-details strong {
+        color: #0369a1;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>New Assignment Request</h2>
+      <p>Hello <%= name %>,</p>
+      <p>
+        You have been assigned a new request. Please review the details below
+        and accept or reject the assignment.
+      </p>
+      <div class="request-details">
+        <p><strong>Request Number:</strong> <%= requestNumber %></p>
+        <p><strong>Title:</strong> <%= requestTitle %></p>
+        <p><strong>Citizen:</strong> <%= citizenName %></p>
+        <p><strong>Location:</strong> <%= location %></p>
+      </div>
+      <p>
+        Please log in to your dashboard to accept or reject this assignment. If
+        you reject, the system will automatically assign another resolver.
+      </p>
+      <p>
+        Best regards,<br />
+        <span class="highlight">City Sense Team</span>
+      </p>
+      <div class="footer">
+        &copy; <%= year %> City Sense. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
