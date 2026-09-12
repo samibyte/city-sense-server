@@ -26,7 +26,7 @@ import type {
 	ISendEmailVerificationOtpPayload,
 	IVerifyEmailPayload,
 } from "./auth.interface.js";
-import { TokenPayload } from "google-auth-library";
+import type { TokenPayload } from "google-auth-library";
 import { googleClient } from "../../lib/google-client.js";
 
 const EMAIL_VERIFICATION_OTP_EXPIRATION_SECONDS = 60 * 10;
@@ -454,18 +454,27 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		googleIdTokenPayload = ticket.getPayload();
 	} catch (error) {
 		console.log("Google ID Token verification failed", error);
-		throw new Error("Invalid or expired google Id Token");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Invalid or expired google Id Token",
+		);
 	}
 
 	if (!googleIdTokenPayload) {
-		throw new Error("Invalid or expired google Id Token");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Invalid or expired google Id Token",
+		);
 	}
 
 	if (!googleIdTokenPayload.name) {
-		throw new Error("Google account name not found");
+		throw new AppError(httpStatus.BAD_REQUEST, "Google account name not found");
 	}
 	if (!googleIdTokenPayload.email) {
-		throw new Error("Google account email not found");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Google account email not found",
+		);
 	}
 
 	const citizenExistWithGoogleAuth = await prisma.user.findUnique({
@@ -489,18 +498,18 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 
 		if (citizenExistWithCredentials) {
 			if (!citizenExistWithCredentials.emailVerified) {
-				throw new Error("Email Not Verified");
+				throw new AppError(httpStatus.BAD_REQUEST, "Email Not Verified");
 			}
 
 			if (citizenExistWithCredentials.status === UserStatus.BANNED) {
-				throw new Error("User Is Blocked");
+				throw new AppError(httpStatus.FORBIDDEN, "User Is Blocked");
 			}
 
 			if (
 				citizenExistWithCredentials.isDeleted ||
 				citizenExistWithCredentials.status === UserStatus.DELETED
 			) {
-				throw new Error("User Is Deleted");
+				throw new AppError(httpStatus.UNAUTHORIZED, "User Is Deleted");
 			}
 
 			user = await prisma.user.update({
@@ -528,22 +537,22 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 	}
 
 	if (!user) {
-		throw new Error("User Not Found");
+		throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
 	}
 
 	if (user.status === UserStatus.BANNED) {
-		throw new Error("User Is Blocked");
+		throw new AppError(httpStatus.FORBIDDEN, "User Is Blocked");
 	}
 
 	if (user.isDeleted || user.status === UserStatus.DELETED) {
-		throw new Error("User Is Deleted");
+		throw new AppError(httpStatus.UNAUTHORIZED, "User Is Deleted");
 	}
 
 	const jwtPayload = {
-		userId: googleIdTokenPayload.sub,
-		name: googleIdTokenPayload.name,
-		email: googleIdTokenPayload.email,
-		role: Role.CITIZEN,
+		userId: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
 	};
 
 	const authTokens = generateAuthTokens(jwtPayload);
