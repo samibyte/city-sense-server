@@ -1,9 +1,15 @@
 import crypto from "node:crypto";
 import httpStatus from "http-status";
-import { RequestStatus, Role } from "../../../generated/prisma/enums.js";
+import {
+	PaymentStatus,
+	RequestStatus,
+	Role,
+} from "../../../generated/prisma/enums.js";
 import AppError from "../../errorHelpers/AppError.js";
 import { prisma } from "../../lib/prisma.js";
+import { stripe } from "../../lib/stripe.js";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload.js";
+import { assignmentService } from "../assignment/assignment.service.js";
 import type {
 	ICreateFeedbackPayload,
 	ICreateRequestPayload,
@@ -27,18 +33,21 @@ const createRequest = async (
 		where: { id: payload.categoryId },
 	});
 
-	if (!category) {
+	if (!category || category.isDeleted) {
 		throw new AppError(httpStatus.NOT_FOUND, "Service category not found");
 	}
 
+	let service: { isPaid: boolean; isDeleted: boolean } | null = null;
 	if (payload.serviceId) {
-		const service = await prisma.service.findUnique({
+		service = await prisma.service.findUnique({
 			where: { id: payload.serviceId },
 		});
 		if (!service || service.isDeleted) {
 			throw new AppError(httpStatus.NOT_FOUND, "Service not found");
 		}
 	}
+
+	const isPaidRequest = service?.isPaid ?? false;
 
 	let attachments: Array<{ url: string; publicId: string }> = [];
 	if (files && files.length > 0) {
@@ -59,6 +68,10 @@ const createRequest = async (
 		data: payload.location,
 	});
 
+	const initialStatus = isPaidRequest
+		? RequestStatus.PENDING
+		: RequestStatus.SUBMITTED;
+
 	const request = await prisma.request.create({
 		data: {
 			requestNumber,
@@ -66,16 +79,17 @@ const createRequest = async (
 			title: payload.title,
 			description: payload.description,
 			requestAttachment: attachments.length > 0 ? attachments : undefined,
-			status: RequestStatus.SUBMITTED,
-			priority: payload.priority,
+			status: initialStatus,
 			citizenId: citizen.id,
 			categoryId: payload.categoryId,
 			serviceId: payload.serviceId,
 			locationId: location.id,
 			statusHistory: {
 				create: {
-					status: RequestStatus.SUBMITTED,
-					notes: "Request submitted by citizen",
+					status: initialStatus,
+					notes: isPaidRequest
+						? "Request created, awaiting payment"
+						: "Request submitted by citizen",
 					changedByUserId: userId,
 				},
 			},
@@ -89,6 +103,12 @@ const createRequest = async (
 			},
 		},
 	});
+
+	if (!isPaidRequest) {
+		assignmentService.assignNextResolver(request.id).catch((error) => {
+			console.error(`Auto-assignment failed for request ${request.id}:`, error);
+		});
+	}
 
 	return request;
 };
@@ -249,11 +269,36 @@ const cancelRequest = async (userId: string, requestId: string) => {
 		);
 	}
 
-	if (request.status !== RequestStatus.SUBMITTED) {
+	if (
+		request.status !== RequestStatus.SUBMITTED &&
+		request.status !== RequestStatus.PENDING
+	) {
 		throw new AppError(
 			httpStatus.BAD_REQUEST,
 			`Cannot cancel request because it is already ${request.status.toLowerCase()}`,
 		);
+	}
+
+	if (request.status === RequestStatus.PENDING) {
+		const payment = await prisma.payment.findUnique({
+			where: { requestId: requestId },
+		});
+
+		if (payment?.status === PaymentStatus.PAID) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"Cannot cancel a request that has already been paid",
+			);
+		}
+
+		const sessionId = payment?.transactionId;
+		if (sessionId && !sessionId.startsWith("TEMP-")) {
+			try {
+				await stripe.checkout.sessions.expire(sessionId);
+			} catch (error) {
+				console.error(`Failed to expire checkout session ${sessionId}:`, error);
+			}
+		}
 	}
 
 	const [updatedRequest] = await prisma.$transaction([
@@ -356,10 +401,64 @@ const giveFeedback = async (
 	return feedback;
 };
 
+const confirmCompletion = async (userId: string, requestId: string) => {
+	const citizen = await prisma.citizenProfile.findUnique({
+		where: { userId },
+	});
+
+	if (!citizen) {
+		throw new AppError(httpStatus.NOT_FOUND, "Citizen profile not found");
+	}
+
+	const request = await prisma.request.findUnique({
+		where: { id: requestId },
+	});
+
+	if (!request) {
+		throw new AppError(httpStatus.NOT_FOUND, "Request not found");
+	}
+
+	if (request.citizenId !== citizen.id) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"You can only confirm completion for your own requests",
+		);
+	}
+
+	if (request.status !== RequestStatus.RESOLVED) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			`Cannot confirm completion. Request status is ${request.status.toLowerCase()}`,
+		);
+	}
+
+	const [updatedRequest] = await prisma.$transaction([
+		prisma.request.update({
+			where: { id: requestId },
+			data: {
+				status: RequestStatus.COMPLETED,
+				completedAt: new Date(),
+			},
+		}),
+		prisma.requestStatusHistory.create({
+			data: {
+				requestId,
+				status: RequestStatus.COMPLETED,
+				previousStatus: request.status,
+				notes: "Request completion confirmed by citizen",
+				changedByUserId: userId,
+			},
+		}),
+	]);
+
+	return updatedRequest;
+};
+
 export const requestService = {
 	createRequest,
 	getMyRequests,
 	getRequestById,
 	cancelRequest,
 	giveFeedback,
+	confirmCompletion,
 };

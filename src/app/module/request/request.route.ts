@@ -39,3 +39,9 @@ requestRouter.post(
 	validateRequest(RequestValidation.CreateFeedbackZodSchema),
 	requestController.giveFeedback,
 );
+
+requestRouter.patch(
+	"/:id/confirm",
+	auth(Role.CITIZEN),
+	requestController.confirmCompletion,
+);

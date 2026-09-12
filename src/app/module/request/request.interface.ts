@@ -10,7 +10,6 @@ export interface ICreateRequestPayload {
 	description: string;
 	categoryId: string;
 	serviceId?: string;
-	priority?: Priority;
 	location: {
 		address: string;
 		latitude?: string;

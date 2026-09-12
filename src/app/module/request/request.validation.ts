@@ -9,7 +9,6 @@ export const CreateRequestZodSchema = z.object({
 		.min(10, "Description must be at least 10 characters long"),
 	categoryId: z.string().trim().min(1, "Category ID is required"),
 	serviceId: z.string().trim().optional(),
-	priority: z.enum(["HIGH", "MEDIUM", "LOW"]).optional(),
 	location: z.object({
 		address: z
 			.string()

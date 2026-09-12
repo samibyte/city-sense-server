@@ -35,7 +35,9 @@ const createRequest = catchAsync(async (req: Request, res: Response) => {
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
-		message: "Request submitted successfully",
+		message: result.service?.isPaid
+			? "Request created. Payment is required to proceed."
+			: "Request submitted successfully",
 		data: result,
 	});
 });
@@ -108,10 +110,28 @@ const giveFeedback = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const confirmCompletion = catchAsync(async (req: Request, res: Response) => {
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in.");
+	}
+
+	const result = await requestService.confirmCompletion(
+		req.user.userId,
+		req.params.id as string,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		message: "Request completion confirmed successfully",
+		data: result,
+	});
+});
+
 export const requestController = {
 	createRequest,
 	getMyRequests,
 	getRequestById,
 	cancelRequest,
 	giveFeedback,
+	confirmCompletion,
 };
