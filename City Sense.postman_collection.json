@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "5a00a419-7ca7-4a36-b875-481b368692cb",
+		"_postman_id": "36ac6bcd-a394-4622-979c-ccc0e74f9a7c",
 		"name": "City Sense",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "49609884",
-		"_collection_link": "https://samibyte-3306004.postman.co/workspace/samibyteZone~3f81ac94-89a8-4f6c-8491-506852ef3e39/collection/49609884-5a00a419-7ca7-4a36-b875-481b368692cb?action=share&source=collection_link&creator=49609884"
+		"_collection_link": "https://samibyte-3306004.postman.co/workspace/samibyteZone~3f81ac94-89a8-4f6c-8491-506852ef3e39/collection/49609884-36ac6bcd-a394-4622-979c-ccc0e74f9a7c?action=share&source=collection_link&creator=49609884"
 	},
 	"item": [
 		{
@@ -17,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"sami1\",\r\n    \"email\": \"adnanss.akanda@gmaill.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
+							"raw": "{\r\n    \"name\": \"sami adnan\",\r\n    \"email\": \"subeto37@gmail.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -44,7 +44,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"adnans.akanda@gmail.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
+							"raw": "{\r\n    \"email\": \"citizen@gmail.com\",\r\n    \"password\": \"!Password1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -241,8 +241,17 @@
 				{
 					"name": "Google Login",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idToken\": \"google generated id token from frontend\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/login/google",
 							"host": [
@@ -397,7 +406,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/services?page=1&limit=10",
+							"raw": "{{baseUrl}}/services",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -681,8 +690,8 @@
 							"formdata": [
 								{
 									"key": "data",
-									"type": "text",
-									"value": "{\n    \"user\": {\n        \"name\": \"New Resolver\",\n        \"email\": \"resolver.applicant@example.com\",\n        \"phone\": \"+8801700000000\",\n        \"address\": \"Dhaka, Bangladesh\"\n    },\n    \"resolver\": {\n        \"bio\": \"Experienced professional with 10 years of expertise in public works.\",\n        \"departmentId\": \"department_id_here\"\n    }\n}"
+									"value": "{\n    \"user\": {\n        \"name\": \"New Resolver\",\n        \"email\": \"resolver.applicant@example.com\",\n        \"phone\": \"+8801700000000\",\n        \"address\": \"Dhaka, Bangladesh\"\n    },\n    \"resolver\": {\n        \"bio\": \"Experienced professional with 10 years of expertise in public works.\",\n        \"departmentId\": \"department_id_here\"\n    }\n}",
+									"type": "text"
 								},
 								{
 									"key": "resume",
@@ -716,7 +725,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/resolver/applications?page=1&limit=10",
+							"raw": "{{baseUrl}}/resolver/applications",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -835,7 +844,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/resolver/assignments?page=1&limit=10",
+							"raw": "{{baseUrl}}/resolver/assignments",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -999,9 +1008,17 @@
 							"mode": "formdata",
 							"formdata": [
 								{
+"key": "data",
+								"value": "{\n    \"type\": \"COMPLAINT\",\n    \"title\": \"Broken streetlight on Main Road\",\n    \"description\": \"The streetlight near house #12 on Main Road has been broken for two weeks, please fix it.\",\n    \"categoryId\": \"category_id_here\",\n    \"serviceId\": \"service_id_here\",\n    \"location\": {\n        \"address\": \"House #12, Main Road, Banani\",\n        \"latitude\": \"23.7937\",\n        \"longitude\": \"90.4066\",\n        \"area\": \"Banani\",\n        \"city\": \"Dhaka\"\n    }\n}",
+							"type": "text",
+							"description": "COMPLAINT payload — title, description, categoryId are required"
+							},
+								{
 									"key": "data",
+									"value": "{\n    \"type\": \"SERVICE_REQUEST\",\n    \"serviceId\": \"service_id_here\",\n    \"location\": {\n        \"address\": \"House #12, Main Road, Banani\",\n        \"latitude\": \"23.7937\",\n        \"longitude\": \"90.4066\",\n        \"area\": \"Banani\",\n        \"city\": \"Dhaka\"\n    }\n}",
 									"type": "text",
-									"value": "{\n    \"type\": \"COMPLAINT\",\n    \"title\": \"Broken streetlight on Main Road\",\n    \"description\": \"The streetlight near house #12 on Main Road has been broken for two weeks, please fix it.\",\n    \"categoryId\": \"category_id_here\",\n    \"serviceId\": \"service_id_here\",\n    \"priority\": \"MEDIUM\",\n    \"location\": {\n        \"address\": \"House #12, Main Road, Banani\",\n        \"latitude\": \"23.7937\",\n        \"longitude\": \"90.4066\",\n        \"area\": \"Banani\",\n        \"city\": \"Dhaka\"\n    }\n}"
+									"disabled": true,
+									"description": "SERVICE_REQUEST payload — only serviceId + location needed (title/description/categoryId are derived from the service)"
 								},
 								{
 									"key": "attachments",
@@ -1035,7 +1052,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/requests/my-requests?page=1&limit=10",
+							"raw": "{{baseUrl}}/requests/my-requests",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1151,6 +1168,31 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Confirm Completion",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requests/:id/confirm",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requests",
+								":id",
+								"confirm"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1181,7 +1223,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/admin/requests?page=1&limit=10",
+							"raw": "{{baseUrl}}/admin/requests",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1210,6 +1252,25 @@
 									"value": "COMPLAINT",
 									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Resolvers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/resolvers/available",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"resolvers",
+								"available"
 							]
 						}
 					},
@@ -1312,7 +1373,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/admin/users?page=1&limit=10",
+							"raw": "{{baseUrl}}/admin/users",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1381,6 +1442,164 @@
 									"key": "id",
 									"value": "user_id_here"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "{\n    \"name\": \"Sami Adnan\",\n    \"phone\": \"+8801700000000\",\n    \"address\": \"Dhaka, Bangladesh\"\n}",
+									"type": "text"
+								},
+								{
+									"key": "profileImage",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Create Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"requestId\": \"request_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payments",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transactionId\": \"transaction_id_here\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/confirm",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payments",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment By Request ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/payments/:requestId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payments",
+								":requestId"
+							],
+							"variable": [
+								{
+									"key": "requestId",
+									"value": "request_id_here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stripe Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "stripe-signature",
+								"value": "stripe_webhook_signature_here"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"evt_stripe_event_id\",\r\n    \"object\": \"event\",\r\n    \"type\": \"checkout.session.completed\",\r\n    \"data\": {\r\n        \"object\": {\r\n            \"id\": \"cs_session_id\",\r\n            \"payment_status\": \"paid\",\r\n            \"metadata\": {\r\n                \"requestId\": \"request_id_here\",\r\n                \"paymentId\": \"payment_id_here\"\r\n            }\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/webhook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payments",
+								"webhook"
 							]
 						}
 					},
