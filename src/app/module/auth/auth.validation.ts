@@ -10,7 +10,7 @@ const passwordSchema = z
 
 const LoginZodSchema = z.object({
 	email: z.email("Please provide a valid email!"),
-	password: passwordSchema,
+	password: z.string(),
 });
 
 const CitizenRegisterZodSchema = z.object({
